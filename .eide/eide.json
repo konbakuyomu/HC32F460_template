@@ -1,0 +1,113 @@
+{
+  "name": "HC32F460_template",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [
+    "drivers",
+    "linker",
+    "include",
+    "source",
+    "middlewares"
+  ],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": []
+  },
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "b3f2dfb928548a3bf51668eec4d75947"
+  },
+  "targets": {
+    "Debug": {
+      "excludeList": [
+        "drivers/bsp/components/printf/printf.c"
+      ],
+      "toolchain": "GCC",
+      "compileConfig": {
+        "cpuType": "Cortex-M4",
+        "floatingPointHardware": "single",
+        "scatterFilePath": "linker/HC32F460xE.ld",
+        "useCustomScatterFile": true,
+        "storageLayout": {
+          "RAM": [],
+          "ROM": []
+        },
+        "options": "null"
+      },
+      "uploader": "JLink",
+      "uploadConfig": {
+        "bin": "",
+        "baseAddr": "",
+        "cpuInfo": {
+          "vendor": "HDSC",
+          "cpuName": "HC32F46x"
+        },
+        "proType": 0,
+        "speed": 10000,
+        "otherCmds": ""
+      },
+      "uploadConfigMap": {},
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "include",
+          "drivers/bsp/components/24cxx",
+          "drivers/bsp/components/w25qxx",
+          "drivers/bsp/components/wm8731",
+          "drivers/bsp/ev_hc32f460_lqfp100_v2",
+          "drivers/cmsis/Device/HDSC/hc32f4xx/Include",
+          "drivers/cmsis/Include",
+          "middlewares/freeRTOS/port/GCC/ARM_CM4F",
+          "middlewares/freeRTOS/include",
+          "drivers/hc32_ll_driver/inc",
+          "drivers/bsp/components/malloc",
+          "drivers/bsp/usart",
+          "drivers/app",
+          "drivers/bsp/components/printf",
+          "middlewares/qf_lib/inc",
+          "drivers/bsp/cpu_utilization"
+        ],
+        "libList": [],
+        "defineList": [
+          "__DEBUG",
+          "HC32F460",
+          "USE_DDL_DRIVER"
+        ]
+      },
+      "builderOptions": {
+        "GCC": {
+          "version": 5,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "$float-abi-type": "softfp",
+            "output-debug-info": "enable",
+            "misc-control": "--specs=nosys.specs --specs=nano.specs"
+          },
+          "c/cpp-compiler": {
+            "language-c": "c11",
+            "language-cpp": "c++14",
+            "optimization": "level-debug",
+            "warnings": "all-warnings",
+            "one-elf-section-per-function": true,
+            "one-elf-section-per-data": true,
+            "C_FLAGS": "-Wno-main -Wno-unused-function -Wno-missing-prototypes",
+            "CXX_FLAGS": "-Wno-main -Wno-unused-function"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "output-format": "elf",
+            "remove-unused-input-sections": true,
+            "LD_FLAGS": "-fno-builtin -Wl,--no-warn-rwx-segments",
+            "LIB_FLAGS": "-lm",
+            "$toolName": "auto"
+          }
+        }
+      }
+    }
+  },
+  "version": "3.5"
+}
