@@ -8,8 +8,7 @@ typedef struct
     void (*app_power_off)();
 } app_func_t;
 
-typedef struct _app_list_t
-{
+typedef struct _app_list_t {
     app_func_t func;
     app_obj_t obj;
     app_handle_t handle;
@@ -18,13 +17,12 @@ typedef struct _app_list_t
 
 static app_list_t *list_head = NULL;
 static app_list_t *list_tail = NULL;
-static int32_t app_cnt = 0;
+static int32_t app_cnt       = 0;
 static app_obj_t *app_loaded = NULL;
 
 static int _strcmp(const char *str1, const char *str2)
 {
-    for (; *str1 == *str2; ++str1, ++str2)
-    {
+    for (; *str1 == *str2; ++str1, ++str2) {
         if (*str1 == '\0')
             return (0);
     }
@@ -34,12 +32,9 @@ static int _strcmp(const char *str1, const char *str2)
 static void app_list_add(app_list_t *app)
 {
     app->next = NULL;
-    if (list_head == NULL)
-    {
+    if (list_head == NULL) {
         list_head = app;
-    }
-    else
-    {
+    } else {
         list_tail->next = app;
     }
     list_tail = app;
@@ -48,8 +43,7 @@ static void app_list_add(app_list_t *app)
 static app_list_t *app_list_find(const char *name)
 {
     app_list_t *move = list_head;
-    while (move != NULL)
-    {
+    while (move != NULL) {
         if (_strcmp(name, move->obj.name) == 0)
             return move;
         move = move->next;
@@ -62,7 +56,7 @@ static app_list_t *app_list_find_id(app_handle_t handle)
     if (handle >= app_cnt)
         return NULL;
     app_list_t *move = list_head;
-    for (size_t i = 0; i < handle; i++)
+    for (app_handle_t i = 0; i < handle; i++)
         move = move->next;
     return move;
 }
@@ -73,13 +67,13 @@ app_handle_t app_install(app_config_t *cfg)
     if (app == NULL)
         return app_none;
 
-    app->func.app_load = cfg->app_load;
+    app->func.app_load  = cfg->app_load;
     app->func.app_close = cfg->app_close;
-    app->func.app_kill = cfg->app_kill;
+    app->func.app_kill  = cfg->app_kill;
 
-    app->obj.name = cfg->name;
-    app->obj.name_font = cfg->name_font;
-    app->obj.icon = cfg->icon;
+    app->obj.name                 = cfg->name;
+    app->obj.name_font            = cfg->name_font;
+    app->obj.icon                 = cfg->icon;
     *(uint8_t *)&app->obj.has_gui = cfg->has_gui;
 
     app->handle = app_cnt;
@@ -98,29 +92,23 @@ uint8_t app_load(const char *name, app_handle_t handle)
     app_list_t *tmp;
     if (name == NULL && handle == app_none)
         return 0;
-    if (name == NULL)
-    {
+    if (name == NULL) {
         tmp = app_list_find_id(handle);
-    }
-    else
-    {
+    } else {
         tmp = app_list_find(name);
     }
-    if (tmp == NULL)
-    {
+    if (tmp == NULL) {
         return 0;
     }
 
-    if (app_loaded != NULL)
-    {
+    if (app_loaded != NULL) {
 
         app_close(app_loaded->name, app_none);
     }
 
     app_loaded = &tmp->obj;
 
-    if (tmp->func.app_load != NULL)
-    {
+    if (tmp->func.app_load != NULL) {
         tmp->func.app_load();
     }
 
@@ -163,8 +151,7 @@ uint8_t app_kill(const char *name, app_handle_t handle)
 void app_kill_all()
 {
     app_list_t *tmp = list_head;
-    for (size_t i = 0; i < app_cnt; i++)
-    {
+    for (app_handle_t i = 0; i < app_cnt; i++) {
         if (tmp->func.app_kill != NULL)
             tmp->func.app_kill();
         tmp = tmp->next;
@@ -174,8 +161,7 @@ void app_kill_all()
 void app_power_off_all()
 {
     app_list_t *tmp = list_head;
-    for (size_t i = 0; i < app_cnt; i++)
-    {
+    for (app_handle_t i = 0; i < app_cnt; i++) {
         if (tmp->func.app_power_off != NULL)
             tmp->func.app_power_off();
         tmp = tmp->next;

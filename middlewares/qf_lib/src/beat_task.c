@@ -3,13 +3,13 @@
 
 static btask_datas_t *list_head = NULL;
 static btask_datas_t *list_tail = NULL;
-static btask_cb_t delay_cb = NULL;
+static btask_cb_t delay_cb      = NULL;
 static btask_event_t delay_userdata;
-static int32_t btask_delay_t = 0;
+static int32_t btask_delay_t          = 0;
 static uint32_t (*_timer_get_count)() = NULL;
 static btask_timer_count_mode _count_mode;
-static uint32_t tic_count = 0;
-static int tic_flg = 0;
+static uint32_t tic_count    = 0;
+static int tic_flg           = 0;
 static uint32_t pass_time_ms = 0;
 
 #if btask_support_rtos
@@ -26,8 +26,7 @@ static btask_datas_t *_find_task_handle(const char *name)
     btask_datas_t *move = list_head;
     if (list_head == NULL)
         return NULL;
-    for (;;)
-    {
+    for (;;) {
         if (strcmp(move->name, name) == 0)
             return move;
         if (move->next == NULL)
@@ -39,7 +38,7 @@ static btask_datas_t *_find_task_handle(const char *name)
 void btask_set_timer_count_cb(uint32_t (*timer_get_count)(), btask_timer_count_mode count_mode)
 {
     _timer_get_count = timer_get_count;
-    _count_mode = count_mode;
+    _count_mode      = count_mode;
 }
 
 void btask_del_timer_count_cb()
@@ -49,8 +48,8 @@ void btask_del_timer_count_cb()
 
 void btask_set_delay_cb(btask_cb_t cb, void *userdata)
 {
-    delay_cb = cb;
-    delay_userdata.handle = NULL;
+    delay_cb                = cb;
+    delay_userdata.handle   = NULL;
     delay_userdata.userdata = userdata;
 }
 
@@ -71,26 +70,25 @@ btask_handle_t btask_creat_ms(uint32_t million, btask_cb_t cb, int16_t count, co
     mutex.mutex_get_cb();
 #endif
 
-    if (list_tail != NULL)
-    {
+    if (list_tail != NULL) {
         list_tail->next = tmp;
-        tmp->last = list_tail;
+        tmp->last       = list_tail;
     }
     if (list_head == NULL)
         list_head = tmp;
 
-    list_tail = tmp;
-    tmp->_busy = 0;
-    tmp->name = name;
-    tmp->next = NULL;
-    tmp->del_cb = NULL;
-    tmp->tick_p = cb;                         // 注册回调函数
-    tmp->tick_t_count = 0;                    // 更新计数
-    tmp->tick_t_count_max = million;          // 更新定时
-    tmp->tick_t_mode_flg = count;             // 更新次数
-    tmp->userdata.handle = (const void *)tmp; // 获取句柄地址
-    tmp->userdata.userdata = userdata;        // 更新用户指针
-    tmp->del_userdata.handle = tmp->userdata.handle;
+    list_tail                  = tmp;
+    tmp->_busy                 = 0;
+    tmp->name                  = name;
+    tmp->next                  = NULL;
+    tmp->del_cb                = NULL;
+    tmp->tick_p                = cb;                // 注册回调函数
+    tmp->tick_t_count          = 0;                 // 更新计数
+    tmp->tick_t_count_max      = million;           // 更新定时
+    tmp->tick_t_mode_flg       = count;             // 更新次数
+    tmp->userdata.handle       = (const void *)tmp; // 获取句柄地址
+    tmp->userdata.userdata     = userdata;          // 更新用户指针
+    tmp->del_userdata.handle   = tmp->userdata.handle;
     tmp->del_userdata.userdata = NULL;
 
 #if btask_support_rtos
@@ -110,20 +108,17 @@ void btask_set_del_cb(btask_handle_t handle, const char *name, btask_cb_t cb, vo
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
-    tmp->del_cb = cb;
+    tmp->del_cb                = cb;
     tmp->del_userdata.userdata = userdata;
 #if btask_support_rtos
     mutex.mutex_give_cb();
@@ -134,19 +129,15 @@ uint8_t btask_has_task(btask_handle_t handle, const char *name)
 {
     if (list_head == NULL)
         return 0;
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         if (_find_task_handle(name) == NULL)
             return 0;
         else
             return 1;
-    }
-    else
-    {
+    } else {
         btask_datas_t *move = list_head;
-        btask_datas_t *tmp = (btask_datas_t *)handle;
-        for (;;)
-        {
+        btask_datas_t *tmp  = (btask_datas_t *)handle;
+        for (;;) {
             if (move == tmp)
                 return 1;
             if (move->next == NULL)
@@ -166,61 +157,47 @@ void btask_del(btask_handle_t handle, const char *name)
         mutex.mutex_get_cb();
 #endif
 
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             if (del_get_key_flg == 0)
                 mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
 
     if (tmp->del_cb != NULL)
         tmp->del_cb(&tmp->del_userdata);
 
-    if (tmp == list_head)
-    {
-        if (list_head->next == NULL)
-        {
-            move = NULL;
+    if (tmp == list_head) {
+        if (list_head->next == NULL) {
+            move      = NULL;
             list_tail = NULL;
-        }
-        else
-        {
-            move = list_head->next;
+        } else {
+            move       = list_head->next;
             move->last = NULL;
         }
 
         btask_free(list_head);
         list_head = move;
-    }
-    else if (tmp == list_tail)
-    {
-        if (list_tail->last == NULL)
-        {
-            move = NULL;
+    } else if (tmp == list_tail) {
+        if (list_tail->last == NULL) {
+            move      = NULL;
             list_head = NULL;
-        }
-        else
-        {
-            move = list_tail->last;
+        } else {
+            move       = list_tail->last;
             move->next = NULL;
         }
         btask_free(list_tail);
         list_tail = move;
-    }
-    else
-    {
+    } else {
         btask_datas_t *_next;
-        move = tmp->last;
-        _next = tmp->next;
-        move->next = tmp->next;
+        move        = tmp->last;
+        _next       = tmp->next;
+        move->next  = tmp->next;
         _next->last = move;
         btask_free(tmp);
     }
@@ -241,18 +218,15 @@ void btask_pause(btask_handle_t handle, const char *name)
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
     if (tmp->tick_t_mode_flg < 0) // 已经暂停
     {
@@ -278,18 +252,15 @@ void btask_resume(btask_handle_t handle, const char *name)
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
     if (tmp->tick_t_mode_flg >= 0) // 已经恢复
     {
@@ -310,18 +281,15 @@ void btask_ready(btask_handle_t handle, const char *name, uint8_t clr_count)
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
 
     if (clr_count == 0)
@@ -345,18 +313,15 @@ void btask_reset(btask_handle_t handle, const char *name)
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
     tmp->tick_t_count = 0;
 #if btask_support_rtos
@@ -370,20 +335,17 @@ void btask_set_time(btask_handle_t handle, const char *name, uint32_t ms)
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
-    tmp->tick_t_count = 0;
+    tmp->tick_t_count     = 0;
     tmp->tick_t_count_max = ms;
 #if btask_support_rtos
     mutex.mutex_give_cb();
@@ -396,21 +358,17 @@ void btask_set_count(btask_handle_t handle, const char *name, int16_t count)
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
-    if (count < 0)
-    {
+    if (count < 0) {
 #if btask_support_rtos
         mutex.mutex_give_cb();
 #endif
@@ -428,18 +386,15 @@ int16_t btask_get_count(btask_handle_t handle, const char *name)
 #if btask_support_rtos
     mutex.mutex_get_cb();
 #endif
-    if (handle == NULL)
-    {
+    if (handle == NULL) {
         tmp = _find_task_handle(name);
-        if (tmp == NULL)
-        {
+        if (tmp == NULL) {
 #if btask_support_rtos
             mutex.mutex_give_cb();
 #endif
             return -1;
         }
-    }
-    else
+    } else
         tmp = (btask_datas_t *)handle;
 
 #if btask_support_rtos
@@ -464,17 +419,15 @@ void btask_handler()
     btask_datas_t *node = list_head;
     btask_datas_t *next = NULL;
 
-    if (tic_flg == 0)
-    {
+    if (tic_flg == 0) {
         return;
     }
 
     _tic_count = tic_count;
-    tic_count = 0;
-    tic_flg = 0;
+    tic_count  = 0;
+    tic_flg    = 0;
 
-    if (list_head == NULL)
-    {
+    if (list_head == NULL) {
         return;
     }
 
@@ -483,8 +436,7 @@ void btask_handler()
     del_get_key_flg = 1;
 #endif
 
-    for (;;)
-    {
+    for (;;) {
 
         node->tick_t_count += _tic_count;
         // 注册了
@@ -508,8 +460,7 @@ void btask_handler()
         if (node->tick_t_mode_flg != 0)
             goto chek_null;
 
-        if (node->next == NULL)
-        {
+        if (node->next == NULL) {
 
             btask_del((btask_handle_t)node, NULL);
             break;
@@ -521,8 +472,7 @@ void btask_handler()
 
     chek_null:
 
-        if (next != NULL)
-        {
+        if (next != NULL) {
             node = next;
             next = NULL;
             continue;
@@ -544,26 +494,22 @@ void btask_delay(uint32_t ms)
     if (_timer_get_count != NULL)
         timer_count = _timer_get_count();
     btask_delay_t = ms;
-    while (btask_delay_t > 0)
-    {
+    while (btask_delay_t > 0) {
         btask_handler();
         if (delay_cb != NULL)
             delay_cb(&delay_userdata);
     }
     if (_timer_get_count == NULL)
         return;
-    if (_count_mode == count_down)
-    {
-        while (_timer_get_count() > timer_count)
-        {
+    if (_count_mode == count_down) {
+        while (_timer_get_count() > timer_count) {
             btask_handler();
             if (delay_cb != NULL)
                 delay_cb(&delay_userdata);
         }
         return;
     }
-    while (_timer_get_count() < timer_count)
-    {
+    while (_timer_get_count() < timer_count) {
         btask_handler();
         if (delay_cb != NULL)
             delay_cb(&delay_userdata);
@@ -576,24 +522,20 @@ void btask_delay_without_task(uint32_t ms)
     if (_timer_get_count != NULL)
         timer_count = _timer_get_count();
     btask_delay_t = ms;
-    while (btask_delay_t > 0)
-    {
+    while (btask_delay_t > 0) {
         if (delay_cb != NULL)
             delay_cb(&delay_userdata);
     }
     if (_timer_get_count == NULL)
         return;
-    if (_count_mode == count_down)
-    {
-        while (_timer_get_count() > timer_count)
-        {
+    if (_count_mode == count_down) {
+        while (_timer_get_count() > timer_count) {
             if (delay_cb != NULL)
                 delay_cb(&delay_userdata);
         }
         return;
     }
-    while (_timer_get_count() < timer_count)
-    {
+    while (_timer_get_count() < timer_count) {
         if (delay_cb != NULL)
             delay_cb(&delay_userdata);
     }

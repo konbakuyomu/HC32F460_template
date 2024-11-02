@@ -8,6 +8,10 @@
  * @copyright Copyright (c) 2024 konbakuyomu
  */
 
+#include "stdio.h"
+#include "string.h"
+#include "stdlib.h"
+#include "stdint.h"
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>

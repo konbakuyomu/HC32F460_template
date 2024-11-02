@@ -1,8 +1,7 @@
 #ifndef button_H
 #define button_H
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 /****************************************************************/
 /*
@@ -69,166 +68,165 @@ extern "C"
 #if BUTTON_NUM
 
 #ifndef BUTTON_BUFFER_NUM
-#define BUTTON_BUFFER_NUM 10 //按钮存储缓冲区大小，此数值为最多存储多少个按钮,至少为1，不要比实际使用多设置，会消耗内存并占用更多cpu
+#define BUTTON_BUFFER_NUM 10 // 按钮存储缓冲区大小，此数值为最多存储多少个按钮,至少为1，不要比实际使用多设置，会消耗内存并占用更多cpu
 #endif
 
-#define btn_double_click_time_default 300         // 双击识别间隔时间  默认300ms
-#define btn_long_press_time_default 400           // 长按识别间隔时间  默认400ms
+#define btn_double_click_time_default       300   // 双击识别间隔时间  默认300ms
+#define btn_long_press_time_default         400   // 长按识别间隔时间  默认400ms
 #define btn_long_press_continuous_trig_time 15000 // 长按时连续触发的开始时间
-#define btn_long_press_trig_interval_time 100     // 长按时连续触发的每次触发间隔时间，默认100ms
-#define btn_shake_ms 20                           // 抖动消除时间  默认20ms
+#define btn_long_press_trig_interval_time   100   // 长按时连续触发的每次触发间隔时间，默认100ms
+#define btn_shake_ms                        20    // 抖动消除时间  默认20ms
 
 //  下列选项可以让程序在编译时就不启用这些功能节省空间  1启用 0停用
 //  同时，还提供了接口可以动态 屏蔽、启用 已开启编译的功能，以实现丰富且便捷的交互操作
-#define btn_down_en 1            // 按下编译使能
-#define btn_up_en 1              // 弹起编译使能
-#define btn_long_press_en 1      // 长按编译使能
-#define btn_click_en 1           // 单击编译使能
-#define btn_double_click_en 1    // 双击编译使能
+#define btn_down_en            1 // 按下编译使能
+#define btn_up_en              1 // 弹起编译使能
+#define btn_long_press_en      1 // 长按编译使能
+#define btn_click_en           1 // 单击编译使能
+#define btn_double_click_en    1 // 双击编译使能
 #define btn_long_press_trig_en 0 // 长按时连续触发编译使能
 
-    typedef enum
-    {
-        btn_not_press = 0x00,       // 未按下
-        btn_down = 0x01,            // 按下
-        btn_up = 0x02,              // 弹起
-        btn_long_press = 0x04,      // 长按
-        btn_click = 0x08,           // 单击
-        btn_double_click = 0x10,    // 双击
-        btn_long_press_trig = 0x20, // 长按连续触发
-        btn_event_all = 0xff        // 所有事件
-    } btn_event_t;
+typedef enum {
+    btn_not_press       = 0x00, // 未按下
+    btn_down            = 0x01, // 按下
+    btn_up              = 0x02, // 弹起
+    btn_long_press      = 0x04, // 长按
+    btn_click           = 0x08, // 单击
+    btn_double_click    = 0x10, // 双击
+    btn_long_press_trig = 0x20, // 长按连续触发
+    btn_event_all       = 0xff  // 所有事件
+} btn_event_t;
 
-    typedef void (*long_press_trig_cb_t)(void *arg);
+typedef void (*long_press_trig_cb_t)(void *arg);
 
-    /**
-     * @brief 提供心跳，此参数应当小于等于5ms,建议1-3ms最佳
-     *
-     * @param _ms 多少ms调用一次就写多少
-     */
-    void btn_tic_ms(uint8_t _ms);
+/**
+ * @brief 提供心跳，此参数应当小于等于5ms,建议1-3ms最佳
+ *
+ * @param _ms 多少ms调用一次就写多少
+ */
+void btn_tic_ms(uint8_t _ms);
 
-    /**
-     * @brief 绑定读取指定IO口电平状态的回调函数
-     *        格式为： 函数名(常规数字0-254) 返回的值为0或1（无符号1字节整形）对应IO高低电平，
-     *        如果你使用的平台读取电平函数为其他格式，请自行实现此格式后绑定
-     *
-     * @param func 回调函数  int gpio_read(io_num);//io_num:0-254,返回0、1
-     */
-    void btn_attach_read_io_func(uint8_t (*func)(uint8_t io_num));
+/**
+ * @brief 绑定读取指定IO口电平状态的回调函数
+ *        格式为： 函数名(常规数字0-254) 返回的值为0或1（无符号1字节整形）对应IO高低电平，
+ *        如果你使用的平台读取电平函数为其他格式，请自行实现此格式后绑定
+ *
+ * @param func 回调函数  int gpio_read(io_num);//io_num:0-254,返回0、1
+ */
+void btn_attach_read_io_func(uint8_t (*func)(uint8_t io_num));
 
-    /**
-     * @brief 绑定按键IO号和触发电平，对应IO口用户自行配置好对应的上下拉输入状态
-     *
-     * @param io_num 绑定按键对应的GPIO号，如23，41
-     * @param --
-     * @param level 按键按下去后的电平状态，0/1
-     * @return 成功返回1，失败返回0
-     */
-    uint8_t btn_attach(uint8_t io_num, uint8_t level);
+/**
+ * @brief 绑定按键IO号和触发电平，对应IO口用户自行配置好对应的上下拉输入状态
+ *
+ * @param io_num 绑定按键对应的GPIO号，如23，41
+ * @param --
+ * @param level 按键按下去后的电平状态，0/1
+ * @return 成功返回1，失败返回0
+ */
+uint8_t btn_attach(uint8_t io_num, uint8_t level);
 
-    /**
-     * @brief 注册长按连续触发功能在第一次触发时的回调函数
-     *
-     * @param cb 回调函数
-     * @param userdata 用户数据
-     */
-    void btn_attach_long_press_trig_cb(long_press_trig_cb_t cb, void *userdata);
+/**
+ * @brief 注册长按连续触发功能在第一次触发时的回调函数
+ *
+ * @param cb 回调函数
+ * @param userdata 用户数据
+ */
+void btn_attach_long_press_trig_cb(long_press_trig_cb_t cb, void *userdata);
 
-    /**
-     * @brief 注销长按连续触发功能在第一次触发时的回调函数
-     */
-    void btn_detach_long_press_trig_cb();
+/**
+ * @brief 注销长按连续触发功能在第一次触发时的回调函数
+ */
+void btn_detach_long_press_trig_cb();
 
-    /**
-     * @brief 注销按钮，注销后将不会进行对应按键扫描。
-     *
-     * @param io_num io_num：已绑定的按键对应的GPIO号
-     */
-    void btn_detach(uint8_t io_num);
+/**
+ * @brief 注销按钮，注销后将不会进行对应按键扫描。
+ *
+ * @param io_num io_num：已绑定的按键对应的GPIO号
+ */
+void btn_detach(uint8_t io_num);
 
-    /**
-     * @brief 返回按键事件缓冲区还有多少个键值
-     *
-     * @return uint8_t 未取出的键值数
-     */
-    uint8_t btn_available(void);
+/**
+ * @brief 返回按键事件缓冲区还有多少个键值
+ *
+ * @return uint8_t 未取出的键值数
+ */
+uint8_t btn_available(void);
 
-    /**
-     * @brief 读取按键缓冲区的数据，读取后对应键值自动销毁
-     *
-     * @param io_num 返回事件对应的按键IO数字
-     * @param --
-     * @param ret 返回按键事件类型,未启用编译的类型将不可用：
-     * @param ··btn_down,            //按下
-     * @param ··btn_up,              //弹起
-     * @param ··btn_long_press,      //长按
-     * @param ··btn_click,           //单击
-     * @param ··btn_double_click,    //双击
-     */
-    void btn_read_event(uint8_t *io_num, btn_event_t *ret);
+/**
+ * @brief 读取按键缓冲区的数据，读取后对应键值自动销毁
+ *
+ * @param io_num 返回事件对应的按键IO数字
+ * @param --
+ * @param ret 返回按键事件类型,未启用编译的类型将不可用：
+ * @param ··btn_down,            //按下
+ * @param ··btn_up,              //弹起
+ * @param ··btn_long_press,      //长按
+ * @param ··btn_click,           //单击
+ * @param ··btn_double_click,    //双击
+ */
+void btn_read_event(uint8_t *io_num, btn_event_t *ret);
 
 #if btn_long_press_trig_en
-    /**
-     * @brief 设置长按时连续触发的事件类型，默认为单击
-     *
-     * @param type 事件类型：
-     * @param btn_down,            //按下
-     * @param btn_up,              //弹起
-     * @param btn_long_press,      //长按
-     * @param btn_click,           //单击
-     * @param btn_double_click,    //双击
-     */
-    void btn_long_press_trig_event(btn_event_t type);
+/**
+ * @brief 设置长按时连续触发的事件类型，默认为单击
+ *
+ * @param type 事件类型：
+ * @param btn_down,            //按下
+ * @param btn_up,              //弹起
+ * @param btn_long_press,      //长按
+ * @param btn_click,           //单击
+ * @param btn_double_click,    //双击
+ */
+void btn_long_press_trig_event(btn_event_t type);
 
-    /**
-     * @brief 设置长按时连续触发的使能，默认关闭
-     *
-     * @param en -1启用长按时连续触发，0关闭
-     */
-    void btn_long_press_trig_enable(uint8_t en);
+/**
+ * @brief 设置长按时连续触发的使能，默认关闭
+ *
+ * @param en -1启用长按时连续触发，0关闭
+ */
+void btn_long_press_trig_enable(uint8_t en);
 
-    /**
-     * @brief 设置长按连续触发的事件间隔
-     *
-     * @param ms 毫秒为单位
-     */
-    void btn_long_press_trig_time(uint16_t ms);
+/**
+ * @brief 设置长按连续触发的事件间隔
+ *
+ * @param ms 毫秒为单位
+ */
+void btn_long_press_trig_time(uint16_t ms);
 #endif
 
-    /*
-        启用指定按键事件功能
-        可以单独配置一项或多项功能的启用
-        如：
-            btn_enable_event(btn_down);                       //启用按下检测
-            btn_enable_event(btn_long_press);                 //启用长按检测
-            btn_enable_event(btn_down | btn_long_press);   //启用按下和长按检测
-            btn_enable_event(btn_event_all);                  //启用所有启用编译的事件检测
-        所有功能：（具体实际有哪些请根据.h头文件的编译en启用情况而定）
-            btn_down,            //按下
-            btn_up,              //弹起
-            btn_long_press,      //长按
-            btn_click,           //单击
-            btn_double_click,    //双击
-    */
-    void btn_enable_event(uint8_t cfg_t);
+/*
+    启用指定按键事件功能
+    可以单独配置一项或多项功能的启用
+    如：
+        btn_enable_event(btn_down);                       //启用按下检测
+        btn_enable_event(btn_long_press);                 //启用长按检测
+        btn_enable_event(btn_down | btn_long_press);   //启用按下和长按检测
+        btn_enable_event(btn_event_all);                  //启用所有启用编译的事件检测
+    所有功能：（具体实际有哪些请根据.h头文件的编译en启用情况而定）
+        btn_down,            //按下
+        btn_up,              //弹起
+        btn_long_press,      //长按
+        btn_click,           //单击
+        btn_double_click,    //双击
+*/
+void btn_enable_event(uint8_t cfg_t);
 
-    /*
-        停用指定按键事件功能
-        可以单独配置一项或多项功能的停用
-        如：
-            btn_disable_event(btn_down);                      //停用按下检测
-            btn_disable_event(btn_long_press);                //停用长按检测
-            btn_disable_event(btn_down | btn_long_press);  //停用按下和长按检测
-            btn_disable_event(btn_event_all);                 //停用所有启用编译的事件检测
-        所有功能：（具体实际有哪些请根据.h头文件的编译en启用情况而定）
-            btn_down,            //按下
-            btn_up,              //弹起
-            btn_long_press,      //长按
-            btn_click,           //单击
-            btn_double_click,    //双击
-    */
-    void btn_disable_event(uint8_t cfg_t);
+/*
+    停用指定按键事件功能
+    可以单独配置一项或多项功能的停用
+    如：
+        btn_disable_event(btn_down);                      //停用按下检测
+        btn_disable_event(btn_long_press);                //停用长按检测
+        btn_disable_event(btn_down | btn_long_press);  //停用按下和长按检测
+        btn_disable_event(btn_event_all);                 //停用所有启用编译的事件检测
+    所有功能：（具体实际有哪些请根据.h头文件的编译en启用情况而定）
+        btn_down,            //按下
+        btn_up,              //弹起
+        btn_long_press,      //长按
+        btn_click,           //单击
+        btn_double_click,    //双击
+*/
+void btn_disable_event(uint8_t cfg_t);
 
 #ifndef NULL
 #define NULL ((void *)0)

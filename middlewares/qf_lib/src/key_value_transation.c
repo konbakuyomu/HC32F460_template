@@ -37,8 +37,11 @@ static int key_cmp(const char *key1, const char *key2)
 
 static int get_key_sum(const char *key)
 {
-    int sum = 0, i;
-    for (i = 0; i < strlen(key); i++)
+    int sum = 0;
+    size_t len = strlen(key);  // 先获取字符串长度
+    size_t i;  // 使用size_t类型的循环变量
+    
+    for (i = 0; i < len; i++)
     {
         sum += key[i];
     }

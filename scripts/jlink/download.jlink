@@ -1,0 +1,7 @@
+h
+erase
+loadfile build/bin/HC32F460_CMake_Template.hex
+r
+sleep 100
+g
+exit

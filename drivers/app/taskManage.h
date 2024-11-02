@@ -6,16 +6,18 @@
  * @date 2024-09-13
  *
  * @details 包含任务创建和管理相关的类声明和定义
- * 
+ *
  */
 
 #pragma once
-#ifndef __TASK_H
-#define __TASK_H
+
+#ifdef __cplusplus
 
 #include <memory>
+#include <algorithm>
 #include <array>
 #include <string>
+#include <cstring>
 #include <unordered_map>
 #include "FreeRTOS.h"
 #include "task.h"
@@ -28,63 +30,41 @@ namespace TaskManager
     class TaskCreator
     {
     public:
-        /**
-         * @brief 创建TaskCreator实例
-         * @return TaskCreator* 返回TaskCreator实例的指针
-         */
-        static TaskCreator *create();
-
-        /**
-         * @brief 销毁TaskCreator实例
-         */
-        void destroy();
-
-        /**
-         * @brief 创建所有任务
-         */
+        static std::unique_ptr<TaskCreator> create();
         void createTasks();
+        TaskCreator()          = default;
+        virtual ~TaskCreator() = default;
 
     private:
-        TaskCreator() = default;
-        ~TaskCreator() = default;
-
         TaskCreator(const TaskCreator &)            = delete;
         TaskCreator &operator=(const TaskCreator &) = delete;
 
-        /**
-         * @brief 创建工程中所需要的所有任务
-         */
+        void HAL_init();
         void createTask();
-
-        /**
-         * @brief 创建工程中所需要的所有队列
-         */
         void createQueues();
-
-        /**
-         * @brief 创建工程中所需要的所有事件组
-         */
         void createEventGroups();
-
-        /**
-         * @brief 创建工程中所需要的所有定时器
-         */
         void createTimers();
 
-        /**
-         * @brief LED任务的静态回调函数
-         * @param pvParameters 任务参数
-         */
         static void LEDTask(void *pvParameters);
-
-        /**
-         * @brief 测试任务的静态回调函数
-         * @param pvParameters 任务参数
-         */
-        static void TestTask(void *pvParameters);
+        static void UartTask(void *pvParameters);
+        static void CANTXTask(void *pvParameters);
+        static void CANRXTask(void *pvParameters);
     };
 
 }
-
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief 创建应用程序任务
+ *
+ * 此函数用于创建应用程序中的各种任务。
+ */
+void AppTaskCreate(void);
+
+#ifdef __cplusplus
+}
+#endif

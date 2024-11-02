@@ -2,39 +2,110 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "JLink Download(JTAG)",
             "type": "shell",
-            "command": "${command:eide.project.build}",
+            "command": "C:\\Users\\dxt98\\.eide\\tools\\jlink\\JLink.exe",
+            "args": [
+                "-device", "${config:mcu.device}",
+                "-if", "JTAG",
+                "-speed", "10000",
+                "-autoconnect", "1",
+                "-jtagconf", "-1,-1",
+                "-CommanderScript", "${workspaceFolder}/scripts/jlink/download.jlink"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "JLink Download(SWD)",
+            "type": "shell",
+            "command": "C:\\Users\\dxt98\\.eide\\tools\\jlink\\JLink.exe",
+            "args": [
+                "-device", "${config:mcu.device}",
+                "-if", "SWD",
+                "-speed", "10000",
+                "-autoconnect", "1",
+                "-CommanderScript", "${workspaceFolder}/scripts/jlink/download.jlink"
+            ],
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "flash",
+            "label": "JLink Reset(JTAG)",
             "type": "shell",
-            "command": "${command:eide.project.uploadToDevice}",
+            "command": "C:\\Users\\dxt98\\.eide\\tools\\jlink\\JLink.exe",
+            "args": [
+                "-device", "${config:mcu.device}",
+                "-if", "JTAG",
+                "-speed", "10000",
+                "-autoconnect", "1",
+                "-jtagconf", "-1,-1",
+                "-CommanderScript", "${workspaceFolder}/scripts/jlink/reset.jlink"
+            ],
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "build and flash",
+            "label": "JLink Reset(SWD)",
             "type": "shell",
-            "command": "${command:eide.project.buildAndFlash}",
+            "command": "C:\\Users\\dxt98\\.eide\\tools\\jlink\\JLink.exe",
+            "args": [
+                "-device", "${config:mcu.device}",
+                "-if", "SWD",
+                "-speed", "10000",
+                "-autoconnect", "1",
+                "-CommanderScript", "${workspaceFolder}/scripts/jlink/reset.jlink"
+            ],
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "rebuild",
+            "label": "JLink Erase(JTAG)",
             "type": "shell",
-            "command": "${command:eide.project.rebuild}",
+            "command": "C:\\Users\\dxt98\\.eide\\tools\\jlink\\JLink.exe",
+            "args": [
+                "-device", "${config:mcu.device}",
+                "-if", "JTAG",
+                "-speed", "10000",
+                "-autoconnect", "1",
+                "-jtagconf", "-1,-1",
+                "-CommanderScript", "${workspaceFolder}/scripts/jlink/erase.jlink"
+            ],
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "clean",
+            "label": "JLink Erase(SWD)",
             "type": "shell",
-            "command": "${command:eide.project.clean}",
+            "command": "C:\\Users\\dxt98\\.eide\\tools\\jlink\\JLink.exe",
+            "args": [
+                "-device", "${config:mcu.device}",
+                "-if", "SWD",
+                "-speed", "10000",
+                "-autoconnect", "1",
+                "-CommanderScript", "${workspaceFolder}/scripts/jlink/erase.jlink"
+            ],
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "label": "Clean Build",
+            "type": "shell",
+            "command": "Remove-Item",
+            "args": [
+                "-Recurse",
+                "-Force",
+                "${workspaceFolder}\\build"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
         }
     ]
 }

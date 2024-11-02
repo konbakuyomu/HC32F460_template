@@ -90,7 +90,6 @@ extern "C"
      * @param key 键名，可以是动态的
      * @param value 指向数据，可以是动态的
      * @param lenth 数据长度，字节
-     * @note 向指定的键发送消息（即值），并触发与该键关联的回调函数
      * @return int 0：成功，1：无注册键
      */
     int key_value_msg(const char *key, void *value, size_t lenth);

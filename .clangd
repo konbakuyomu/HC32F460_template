@@ -1,0 +1,14 @@
+CompileFlags:
+  Add: [
+    "-ferror-limit=0",        # 禁用错误限制
+    "-include", "FreeRTOS.h", # 强制在所有文件前包含 FreeRTOS.h
+  ]
+
+Diagnostics:
+  UnusedIncludes: None
+  Suppress: [
+    -Wnonportable-include-path,       # 禁用文件系统大小写敏感性警告
+    -Wunused-parameter,               # 禁用未使用参数的警告
+    -Wreserved-identifier,            # 抑制标识符保留相关的警告
+    -Wredefinition-different-kind     # 抑制重定义警告
+  ]

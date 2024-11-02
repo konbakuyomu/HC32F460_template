@@ -1,11 +1,11 @@
 /**
  * @file bsp_cpu.h
- * @brief 统计CPU使用率头文件
+ * @brief FreeRTOS 统计CPU使用率头文件
  * @author konbakuyomu
  * @version 1.0
  * @date 2024-09-13
  *
- * @details 包含CPU利用率驱动的声明和定义
+ * @details 包含FreeRTOS统计CPU利用率的声明和定义
  * @note 根据监控提示，用于统计CPU使用率的高速定时器必须10倍与FreeRTOS的系统中断时间（默认是1ms）。因此定时器的中断时间至少在100us以内，等价于10kHZ频率
  */
 
@@ -21,6 +21,8 @@ extern "C"
 #include "stdlib.h"
 #include "hc32_ll.h"
 
+/* 宏定义 ------------------------------------------------------------------*/
+
 /* 统计CPU使用率TMR0定时器定义 */
 #define CPU_TMR0_UNIT       (CM_TMR0_1)
 #define CPU_TMR0_CLK        (FCG2_PERIPH_TMR0_1)
@@ -34,22 +36,11 @@ extern "C"
 /* 用于统计CPU使用率的高速定时器必须10倍于FreeRTOS的系统中断时间（默认是1ms）。因此定时器的中断时间至少在100us以内，等价于10kHZ频率 */
 #define CPU_TMR0_CMP_VALUE  (2UL)
 
+/* 全局变量 ----------------------------------------------------------------*/
 extern volatile uint32_t CPU_RunTime;
 
-/**
- * @brief 初始化CPU使用率统计
- * @details 初始化CPU使用率统计
- * @param 无
- * @return 无
- */
+/* 函数 -------------------------------------------------------------------*/
 void CPU_TMR0_Config(void);
-
-/**
- * @brief 开始统计CPU使用率
- * @details 开始统计CPU使用率
- * @param 无
- * @return 无
- */
 void Start_CPU_Utilization(void);
 
 

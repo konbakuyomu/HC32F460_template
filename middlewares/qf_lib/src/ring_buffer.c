@@ -5,8 +5,8 @@
 ring_buffer_handle_t ring_buffer_create(ring_buffer_sample_t sample, ring_buffer_signed_t signed_flg, size_t size)
 {
     ring_buffer_t *handle = NULL;
-    void *buffer = NULL;
-    int len = sample;
+    void *buffer          = NULL;
+    int len               = sample;
 
 #if ring_buffer_suppot_float
     if (sample == sample_float)
@@ -20,8 +20,7 @@ ring_buffer_handle_t ring_buffer_create(ring_buffer_sample_t sample, ring_buffer
         return NULL;
 
     buffer = ring_buffer_malloc(len);
-    if (buffer == NULL)
-    {
+    if (buffer == NULL) {
         ring_buffer_free(handle);
         return NULL;
     }
@@ -77,11 +76,11 @@ ring_buffer_handle_t ring_buffer_create(ring_buffer_sample_t sample, ring_buffer
 #endif
 #endif
 
-    handle->add_p = 0;
+    handle->add_p  = 0;
     handle->read_p = 0;
-    handle->size = size;
-    handle->type = sample;
-    handle->count = 0;
+    handle->size   = size;
+    handle->type   = sample;
+    handle->count  = 0;
 
     return handle;
 }
@@ -104,31 +103,30 @@ void ring_buffer_write(ring_buffer_handle_t handle, void *dat)
         if (handle->signed_flg == 1) // 有符号
         {
 #endif
-            switch (handle->type)
-            {
+            switch (handle->type) {
 #if ring_buffer_suppot_8bit
-            case sample_8bit:
-                handle->sum_s -= handle->buffer_8_s[handle->add_p];
-                break;
+                case sample_8bit:
+                    handle->sum_s -= handle->buffer_8_s[handle->add_p];
+                    break;
 #endif // # ring_buffer_suppot_8bit
 #if ring_buffer_suppot_16bit
-            case sample_16bit:
-                handle->sum_s -= handle->buffer_16_s[handle->add_p];
-                break;
+                case sample_16bit:
+                    handle->sum_s -= handle->buffer_16_s[handle->add_p];
+                    break;
 #endif // # ring_buffer_suppot_16bit
 #if ring_buffer_suppot_32bit
-            case sample_32bit:
-                handle->sum_s -= handle->buffer_32_s[handle->add_p];
-                break;
+                case sample_32bit:
+                    handle->sum_s -= handle->buffer_32_s[handle->add_p];
+                    break;
 #endif // # ring_buffer_suppot_32bit
 
 #if ring_buffer_suppot_float
-            case sample_float:
-                handle->sum_f -= handle->buffer_float[handle->add_p];
-                break;
+                case sample_float:
+                    handle->sum_f -= handle->buffer_float[handle->add_p];
+                    break;
 #endif // # ring_buffer_suppot_float
-            default:
-                break;
+                default:
+                    break;
             }
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
         }
@@ -138,28 +136,26 @@ void ring_buffer_write(ring_buffer_handle_t handle, void *dat)
 
 #if ring_buffer_suppot_unsigned
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
-        if (handle->signed_flg == 0)
-        {
+        if (handle->signed_flg == 0) {
 #endif // # ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
-            switch (handle->type)
-            {
+            switch (handle->type) {
 #if ring_buffer_suppot_8bit
-            case sample_8bit:
-                handle->sum -= handle->buffer_8[handle->add_p];
-                break;
+                case sample_8bit:
+                    handle->sum -= handle->buffer_8[handle->add_p];
+                    break;
 #endif // # ring_buffer_suppot_8bit
 #if ring_buffer_suppot_16bit
-            case sample_16bit:
-                handle->sum -= handle->buffer_16[handle->add_p];
-                break;
+                case sample_16bit:
+                    handle->sum -= handle->buffer_16[handle->add_p];
+                    break;
 #endif // # ring_buffer_suppot_16bit
 #if ring_buffer_suppot_32bit
-            case sample_32bit:
-                handle->sum -= handle->buffer_32[handle->add_p];
-                break;
+                case sample_32bit:
+                    handle->sum -= handle->buffer_32[handle->add_p];
+                    break;
 #endif // # ring_buffer_suppot_32bit
-            default:
-                break;
+                default:
+                    break;
             }
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
         }
@@ -175,50 +171,49 @@ void ring_buffer_write(ring_buffer_handle_t handle, void *dat)
     if (handle->signed_flg == 1) // 有符号
     {
 #endif
-        switch (handle->type)
-        {
+        switch (handle->type) {
 #if ring_buffer_suppot_8bit
-        case sample_8bit:
-            handle->buffer_8_s[handle->add_p] = *(int8_t *)dat;
+            case sample_8bit:
+                handle->buffer_8_s[handle->add_p] = *(int8_t *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _var = handle->buffer_8_s[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _var = handle->buffer_8_s[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
 #if ring_buffer_suppot_16bit
-        case sample_16bit:
-            handle->buffer_16_s[handle->add_p] = *(int16_t *)dat;
+            case sample_16bit:
+                handle->buffer_16_s[handle->add_p] = *(int16_t *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _var = handle->buffer_16_s[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _var = handle->buffer_16_s[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
 #if ring_buffer_suppot_32bit
-        case sample_32bit:
-            handle->buffer_32_s[handle->add_p] = *(int32_t *)dat;
+            case sample_32bit:
+                handle->buffer_32_s[handle->add_p] = *(int32_t *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _var = handle->buffer_32_s[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _var = handle->buffer_32_s[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
 #if ring_buffer_suppot_float
-        case sample_float:
-            handle->buffer_float[handle->add_p] = *(float *)dat;
+            case sample_float:
+                handle->buffer_float[handle->add_p] = *(float *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _f_var = handle->buffer_float[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _f_var = handle->buffer_float[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
-        default:
-            break;
+            default:
+                break;
         }
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
     }
@@ -227,53 +222,51 @@ void ring_buffer_write(ring_buffer_handle_t handle, void *dat)
 
 #if ring_buffer_suppot_unsigned
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
-    if (handle->signed_flg == 0)
-    {
+    if (handle->signed_flg == 0) {
 #endif
-        switch (handle->type)
-        {
+        switch (handle->type) {
 #if ring_buffer_suppot_8bit
-        case sample_8bit:
-            handle->buffer_8[handle->add_p] = *(uint8_t *)dat;
+            case sample_8bit:
+                handle->buffer_8[handle->add_p] = *(uint8_t *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _var = handle->buffer_8[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _var = handle->buffer_8[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
 #if ring_buffer_suppot_16bit
-        case sample_16bit:
-            handle->buffer_16[handle->add_p] = *(uint16_t *)dat;
+            case sample_16bit:
+                handle->buffer_16[handle->add_p] = *(uint16_t *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _var = handle->buffer_16[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _var = handle->buffer_16[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
 #if ring_buffer_suppot_32bit
-        case sample_32bit:
-            handle->buffer_32[handle->add_p] = *(uint32_t *)dat;
+            case sample_32bit:
+                handle->buffer_32[handle->add_p] = *(uint32_t *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _var = handle->buffer_32[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _var = handle->buffer_32[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
 #if ring_buffer_suppot_float
-        case sample_float:
-            handle->buffer_float[handle->add_p] = *(float *)dat;
+            case sample_float:
+                handle->buffer_float[handle->add_p] = *(float *)dat;
 #if ring_buffer_moving_flitering_en
-            if (handle->moveing_flitering_flg == 1)
-                _f_var = handle->buffer_float[handle->add_p];
+                if (handle->moveing_flitering_flg == 1)
+                    _f_var = handle->buffer_float[handle->add_p];
 #endif
-            break;
+                break;
 #endif
 
-        default:
-            break;
+            default:
+                break;
         }
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
     }
@@ -281,15 +274,11 @@ void ring_buffer_write(ring_buffer_handle_t handle, void *dat)
 #endif // # ring_buffer_suppot_unsigned
 
 #if ring_buffer_moving_flitering_en
-    if (handle->moveing_flitering_flg)
-    {
+    if (handle->moveing_flitering_flg) {
 #if ring_buffer_suppot_float
-        if (handle->type == sample_float)
-        {
+        if (handle->type == sample_float) {
             handle->sum_f += _f_var;
-        }
-        else
-        {
+        } else {
 #endif
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
             if (handle->signed_flg)
@@ -342,8 +331,7 @@ void ring_buffer_set_moveing_flitering_en(ring_buffer_handle_t handle, uint8_t e
 void ring_buffer_get_moveing_flitering(ring_buffer_handle_t handle, void *dat)
 {
 #if ring_buffer_suppot_float
-    if (handle->type == sample_float)
-    {
+    if (handle->type == sample_float) {
         *(float *)dat = handle->sum_f / (float)handle->size;
         return;
     }
@@ -351,63 +339,59 @@ void ring_buffer_get_moveing_flitering(ring_buffer_handle_t handle, void *dat)
 
 #if ring_buffer_suppot_signed
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
-    if (handle->signed_flg)
-    {
+    if (handle->signed_flg) {
 #endif
-        switch (handle->type)
-        {
+        switch (handle->type) {
 #if ring_buffer_suppot_8bit
-        case sample_8bit:
-            *(int8_t *)dat = handle->sum_s / (int8_t)handle->size;
-            break;
+            case sample_8bit:
+                *(int8_t *)dat = handle->sum_s / (int8_t)handle->size;
+                break;
 #endif
 
 #if ring_buffer_suppot_16bit
-        case sample_16bit:
-            *(int16_t *)dat = handle->sum_s / (int16_t)handle->size;
-            break;
+            case sample_16bit:
+                *(int16_t *)dat = handle->sum_s / (int16_t)handle->size;
+                break;
 #endif
 
 #if ring_buffer_suppot_32bit
-        case sample_32bit:
-            *(int32_t *)dat = handle->sum_s / (int32_t)handle->size;
-            break;
+            case sample_32bit:
+                *(int32_t *)dat = handle->sum_s / (int32_t)handle->size;
+                break;
 #endif
 
-        default:
-            break;
+            default:
+                break;
         }
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
     }
 #endif
 #endif
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
-    else
-    {
+    else {
 #endif
 #if ring_buffer_suppot_unsigned
-        switch (handle->type)
-        {
+        switch (handle->type) {
 #if ring_buffer_suppot_8bit
-        case sample_8bit:
-            *(uint8_t *)dat = handle->sum / handle->size;
-            break;
+            case sample_8bit:
+                *(uint8_t *)dat = handle->sum / handle->size;
+                break;
 #endif
 
 #if ring_buffer_suppot_16bit
-        case sample_16bit:
-            *(uint16_t *)dat = handle->sum / handle->size;
-            break;
+            case sample_16bit:
+                *(uint16_t *)dat = handle->sum / handle->size;
+                break;
 #endif
 
 #if ring_buffer_suppot_32bit
-        case sample_32bit:
-            *(uint32_t *)dat = handle->sum / handle->size;
-            break;
+            case sample_32bit:
+                *(uint32_t *)dat = handle->sum / handle->size;
+                break;
 #endif
 
-        default:
-            break;
+            default:
+                break;
         }
 #endif
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
@@ -418,8 +402,7 @@ void ring_buffer_get_moveing_flitering(ring_buffer_handle_t handle, void *dat)
 void ring_buffer_get_sum(ring_buffer_handle_t handle, void *dat)
 {
 #if ring_buffer_suppot_float
-    if (handle->type == sample_float)
-    {
+    if (handle->type == sample_float) {
         *(float *)dat = handle->sum_f;
         return;
     }
@@ -452,40 +435,38 @@ void ring_buffer_read(ring_buffer_handle_t handle, void *dat)
         return;
 
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
-    if (handle->signed_flg)
-    {
+    if (handle->signed_flg) {
 #endif
 
 #if ring_buffer_suppot_signed || ring_buffer_suppot_float
-        switch (handle->type)
-        {
+        switch (handle->type) {
 
 #if ring_buffer_suppot_8bit
-        case sample_8bit:
-            *(int8_t *)dat = handle->buffer_8_s[handle->read_p++];
-            break;
+            case sample_8bit:
+                *(int8_t *)dat = handle->buffer_8_s[handle->read_p++];
+                break;
 #endif
 
 #if ring_buffer_suppot_16bit
-        case sample_16bit:
-            *(int16_t *)dat = handle->buffer_16_s[handle->read_p++];
-            break;
+            case sample_16bit:
+                *(int16_t *)dat = handle->buffer_16_s[handle->read_p++];
+                break;
 #endif
 
 #if ring_buffer_suppot_32bit
-        case sample_32bit:
-            *(int32_t *)dat = handle->buffer_32_s[handle->read_p++];
-            break;
+            case sample_32bit:
+                *(int32_t *)dat = handle->buffer_32_s[handle->read_p++];
+                break;
 #endif
 
 #if ring_buffer_suppot_float
-        case sample_float:
-            *(float *)dat = handle->buffer_float[handle->read_p++];
-            break;
+            case sample_float:
+                *(float *)dat = handle->buffer_float[handle->read_p++];
+                break;
 #endif
 
-        default:
-            break;
+            default:
+                break;
         }
 #endif
 
@@ -494,32 +475,30 @@ void ring_buffer_read(ring_buffer_handle_t handle, void *dat)
 #endif
 
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
-    else
-    {
+    else {
 #endif
 #if ring_buffer_suppot_unsigned
-        switch (handle->type)
-        {
+        switch (handle->type) {
 #if ring_buffer_suppot_8bit
-        case sample_8bit:
-            *(uint8_t *)dat = handle->buffer_8[handle->read_p++];
-            break;
+            case sample_8bit:
+                *(uint8_t *)dat = handle->buffer_8[handle->read_p++];
+                break;
 #endif
 
 #if ring_buffer_suppot_16bit
-        case sample_16bit:
-            *(uint16_t *)dat = handle->buffer_16[handle->read_p++];
-            break;
+            case sample_16bit:
+                *(uint16_t *)dat = handle->buffer_16[handle->read_p++];
+                break;
 #endif
 
 #if ring_buffer_suppot_32bit
-        case sample_32bit:
-            *(uint32_t *)dat = handle->buffer_32[handle->read_p++];
-            break;
+            case sample_32bit:
+                *(uint32_t *)dat = handle->buffer_32[handle->read_p++];
+                break;
 #endif
 
-        default:
-            break;
+            default:
+                break;
         }
 #endif
 #if ring_buffer_suppot_signed && ring_buffer_suppot_unsigned
