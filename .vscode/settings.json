@@ -2,5 +2,6 @@
     "cmake.environment": {
         "PATH": "${env:PATH};D:/Toolchain/gcc/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin"
     },
-    "mcu.device": "HC32F46x"
+    "mcu.device": "HC32F46x",
+    "projectName": "HC32F460_CMake_Template"
 }
