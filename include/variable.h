@@ -17,6 +17,7 @@
 #include "bsp_pwm.h"
 #include "bsp_uart.h"
 #include "bsp_can.h"
+#include "bsp_led.h"
 
 /* drv 头文件 */
 #include "drv_hal.h"
@@ -106,30 +107,7 @@ extern "C"
     extern uint8_t Host_TxBuf[ARRAY_LENGTH];
     /* 函数 -------------------------------------------------------------------*/
 
-    /**
-     * @brief 初始化键值对线程锁
-     */
-    void key_value_mutex_init(void);
-
-    /**
-     * @brief 注册键值对回调函数
-     */
-    void Key_Value_Init(void);
-
-    /**
-     * @brief 安装中断处理函数
-     * @param pstcConfig 中断配置结构体
-     * @param u32Priority 中断优先级
-     * @return void
-     */
     void INTC_IrqInstalHandler(const stc_irq_signin_config_t *pstcConfig, uint32_t u32Priority);
-
-    /**
-     * @brief 初始化动态缓冲区(串口)
-     * @param buffer 指向 uint8_t 指针的指针，用于存储分配的内存地址
-     * @param size 要分配的内存大小
-     * @return 成功时返回分配的内存地址，失败时返回 NULL
-     */
     uint8_t *init_dynamic_buffer(uint8_t **buffer, size_t size);
 
 #ifdef __cplusplus

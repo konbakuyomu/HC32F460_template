@@ -274,7 +274,7 @@ namespace BSP_CAN {
      */
     void CAN::ProcessCANFrame(stc_can_rx_frame_t Rx_Data)
     {
-        BSP_LED_On(LED_RED);
+        HAL::led_turn_on("LED_RED");
     }
 
     /**

@@ -43,17 +43,17 @@ int32_t main(void)
     BaseType_t xReturn = pdPASS;
 
     /* 创建任务创建任务 */
-    xReturn = xTaskCreate((TaskFunction_t)AppTaskCreate,          /* 任务入口函数 */
-                          (const char *)"AppTaskCreate",          /* 任务名字 */
-                          (uint16_t)256,                          /* 任务栈大小 */
-                          (void *)NULL,                           /* 任务入口函数参数 */
-                          (UBaseType_t)3,                         /* 任务的优先级 */
-                          (TaskHandle_t *)&AppTaskCreate_Handle); /* 任务控制块指针 */
+    xReturn = xTaskCreate((TaskFunction_t)AppTaskCreate,
+                          (const char *)"AppTaskCreate",
+                          (uint16_t)256,
+                          (void *)NULL,
+                          (UBaseType_t)3,
+                          (TaskHandle_t *)&AppTaskCreate_Handle);
 
     /* 启动任务调度 */
     if (pdPASS == xReturn)
     {
-        vTaskStartScheduler(); /* 启动任务，开启调度 */
+        vTaskStartScheduler();
     } else
         return -1;
     /* 正常不会执行到这里 */

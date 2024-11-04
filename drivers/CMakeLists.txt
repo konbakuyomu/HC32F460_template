@@ -78,6 +78,7 @@ set(BSP_PERIPHERAL_SOURCES
     bsp/usart/bsp_uart.cpp
     bsp/pwm/bsp_pwm.cpp
     bsp/can/bsp_can.cpp
+    bsp/led/bsp_led.cpp
 )
 
 # 4. 应用层源文件
@@ -124,6 +125,7 @@ set(BSP_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/components/wm8731
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/components/malloc
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/can
+    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/led
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/pwm
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/usart
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/cpu_utilization

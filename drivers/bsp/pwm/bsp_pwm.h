@@ -11,8 +11,11 @@
 #ifdef __cplusplus
     #include "hal.h"
     #include "hc32_ll.h"
+    #include <map>
     #include <memory>
+    #include <string>
     #include <vector>
+
 
 /* 类定义 ------------------------------------------------------------------*/
 namespace BSP_PWM {
@@ -23,7 +26,7 @@ namespace BSP_PWM {
      */
     class bsp_pwm
     {
-      public:
+      private:
         /**
          * @brief PWM配置结构体
          * @note 该结构体用于配置PWM的硬件参数
@@ -42,24 +45,24 @@ namespace BSP_PWM {
             float duty_cycle;           // PWM占空比（0.0 - 1.0）
         };
 
-      public:
-        bsp_pwm(const PWMConfig &config);
-        bsp_pwm(void) = default;
-        ~bsp_pwm();
-        static void _bsp_pwm_init();
-        void _bsp_pwm_start();
-        void _bsp_pwm_stop();
-        void _bsp_pwm_set_duty_cycle(float duty_cycle);
-        void _bsp_pwm_set_frequency(uint32_t frequency);
-        uint8_t _bsp_pwm_get_direction();
-        void _bsp_pwm_set_direction(uint8_t direction);
-        static void _bsp_add_pwm(const PWMConfig &config);
-        bsp_pwm *_bsp_get_pwm(size_t index);
+        std::map<std::string, PWMConfig> m_pwm_map; // 存储PWM配置的容器
+        static std::unique_ptr<bsp_pwm> m_pwm;
 
       public:
-        PWMConfig m_config;
-        bool m_is_running;
-        static std::vector<std::unique_ptr<bsp_pwm>> m_pwms; // 存储PWM对象的容器
+        bsp_pwm() = default;
+        ~bsp_pwm() = default;
+
+      public:
+        void add_pwm(const std::string &name, const PWMConfig &config);
+
+      public:
+        static void init();
+        static void pwm_start(const std::string &name);
+        static void pwm_stop(const std::string &name);
+        static void pwm_set_duty_cycle(const std::string &name, float duty_cycle);
+        static void pwm_set_frequency(const std::string &name, uint32_t frequency);
+        static uint8_t pwm_get_direction(const std::string &name);
+        static void pwm_set_direction(const std::string &name, uint8_t direction);
     };
 
 } // namespace BSP_PWM

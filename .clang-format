@@ -1,22 +1,33 @@
 ---
-BasedOnStyle: LLVM # 基于LLVM的代码风格
-UseTab: Never # 不使用制表符,使用空格
-IndentWidth: 4 # 缩进宽度为4个空格
-TabWidth: 4 # 制表符宽度为4个空格
-BreakBeforeBraces: Custom # 自定义大括号换行规则
-BraceWrapping: # 大括号换行设置
-  AfterClass: true # 类定义后换行
-  AfterControlStatement: true # 控制语句后换行
-  AfterFunction: true # 函数定义后换行
-  AfterNamespace: false # 命名空间定义后不换行
-  AfterExternBlock: true # extern块后换行
-AlignConsecutiveMacros: true # 对齐连续的宏定义
-AlignTrailingComments: true # 对齐尾随注释
-ColumnLimit: 0 # 不限制每行字符数
-NamespaceIndentation: All # 所有命名空间内容都缩进
-IndentExternBlock: Indent # 缩进extern块
-IndentPPDirectives: BeforeHash # 预处理指令缩进到#之前
-BinPackArguments: false # 不将函数参数打包到一行
-BinPackParameters: false # 不将函数参数打包到一行
-AllowAllArgumentsOnNextLine: false # 不允许所有参数在下一行
-AllowAllParametersOfDeclarationOnNextLine: false # 不允许声明的所有参数在下一行
+# 基础样式设置
+BasedOnStyle: LLVM                    # 基于LLVM的代码风格
+
+# 缩进相关
+UseTab: Never                         # 不使用制表符,使用空格
+IndentWidth: 4                        # 缩进宽度为4个空格
+TabWidth: 4                           # 制表符宽度为4个空格
+NamespaceIndentation: All             # 所有命名空间内容都缩进
+IndentExternBlock: Indent             # 缩进extern块
+IndentPPDirectives: BeforeHash        # 预处理指令缩进到#之前
+
+# 大括号换行设置
+BreakBeforeBraces: Custom             # 自定义大括号换行规则
+BraceWrapping:                        # 大括号换行设置
+  AfterClass: true                    # 类定义后换行
+  AfterControlStatement: true         # 控制语句后换行
+  AfterFunction: true                 # 函数定义后换行
+  AfterNamespace: false               # 命名空间定义后不换行
+  AfterExternBlock: true              # extern块后换行
+
+# 对齐相关
+AlignConsecutiveMacros: true          # 对齐连续的宏定义
+AlignTrailingComments: true           # 对齐尾随注释
+
+# 行长度设置
+ColumnLimit: 0                        # 不限制每行字符数
+
+# 参数格式化
+BinPackArguments: false               # 不将函数参数打包到一行
+BinPackParameters: false              # 不将函数参数打包到一行
+AllowAllArgumentsOnNextLine: false    # 不允许所有参数在下一行
+AllowAllParametersOfDeclarationOnNextLine: false  # 不允许声明的所有参数在下一行

@@ -175,17 +175,3 @@ namespace BSP_USART {
 
 } // namespace BSP_USART
 #endif
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include <stddef.h>
-
-    // C 兼容的函数声明
-    void USART_SendData(void *data, size_t length);
-
-#ifdef __cplusplus
-}
-#endif

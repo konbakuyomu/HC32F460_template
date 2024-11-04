@@ -7,8 +7,9 @@ CompileFlags:
 Diagnostics:
   UnusedIncludes: None
   Suppress: [
-    -Wnonportable-include-path,       # 禁用文件系统大小写敏感性警告
-    -Wunused-parameter,               # 禁用未使用参数的警告
-    -Wreserved-identifier,            # 抑制标识符保留相关的警告
-    -Wredefinition-different-kind     # 抑制重定义警告
+    -Wnonportable-include-path,             # 禁用文件系统大小写敏感性警告
+    -Wunused-parameter,                     # 禁用未使用参数的警告
+    -Wreserved-identifier,                  # 抑制标识符保留相关的警告
+    -Wredefinition-different-kind,          # 抑制重定义警告
+    -Wmissing-designated-field-initializers # 抑制未初始化结构体成员警告
   ]

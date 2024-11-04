@@ -43,14 +43,14 @@ namespace TaskManager {
     {
         /* 系统配置 */
         HAL::system_init();
+        /* LED配置 */
+        HAL::led_init();
         /* 初始化UART */
         HAL::uart_init();
         /* 初始化PWM */
         HAL::pwm_init();
         /* 初始化CAN */
         HAL::can_init();
-        /* 键值对配置 */
-        HAL::global_key_value_init();
     }
 
     /**
@@ -114,7 +114,7 @@ namespace TaskManager {
         // 实现LED任务的逻辑
         for (;;)
         {
-            BSP_LED_Toggle(LED_BLUE);
+            HAL::led_toggle("LED_RED");
             DDL_Printf("Hello World\n");
             vTaskDelay(1000);
         }
@@ -135,7 +135,7 @@ namespace TaskManager {
             {
                 uint16_t u16ReceivedLength = (uint16_t)u32NotificationValue;
                 std::copy_n(Host_RxBuf, u16ReceivedLength, Host_TxBuf);
-                key_value_msg("USART4_SendData", (void *)Host_TxBuf, u16ReceivedLength);
+                HAL::uart_send((void *)Host_TxBuf, u16ReceivedLength);
             }
         }
     }
@@ -148,28 +148,32 @@ namespace TaskManager {
     {
         // 实现CAN发送任务的逻辑
         stc_can_tx_frame_t tx_frame;
-        bool firstRun = true;
+        bool               firstRun = true;
 
         for (;;)
         {
-            while (xQueueReceive(xQueue_CanTx, &tx_frame, portMAX_DELAY) == pdTRUE) // 从CAN发送队列中接收数据
+            while (xQueueReceive(xQueue_CanTx, &tx_frame, portMAX_DELAY) == pdTRUE)  // 从CAN发送队列中接收数据
             {
                 // 第一次不执行等待CAN总线，因为还没有发送过
                 if (!firstRun)
                 {
-                    ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // 等待CAN总线发送完成
+                    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  // 等待CAN总线发送完成
                 } else
                 {
                     firstRun = false;
                 }
 
-                CAN_IntCmd(CM_CAN, CAN_INT_PTB_TX, ENABLE);               // 使能发送中断
-                (void)CAN_FillTxFrame(CM_CAN, CAN_TX_BUF_PTB, &tx_frame); // 将发送帧的数据填充到发送缓冲区
-                CAN_StartTx(CM_CAN, CAN_TX_REQ_PTB);                      // 启动发送
+                CAN_IntCmd(CM_CAN, CAN_INT_PTB_TX, ENABLE);                // 使能发送中断
+                (void)CAN_FillTxFrame(CM_CAN, CAN_TX_BUF_PTB, &tx_frame);  // 将发送帧的数据填充到发送缓冲区
+                CAN_StartTx(CM_CAN, CAN_TX_REQ_PTB);                       // 启动发送
             }
         }
     }
 
+    /**
+     * @brief CAN接收任务的静态回调函数
+     * @param pvParameters 任务参数
+     */
     void TaskCreator::CANRXTask(void *pvParameters)
     {
         // 实现CAN接收任务的逻辑
@@ -192,6 +196,10 @@ namespace TaskManager {
 
     extern "C"
     {
+        /**
+         * @brief 创建应用程序任务
+         * @details 此函数用于创建应用程序中的各种任务。
+         */
         void AppTaskCreate(void)
         {
             /* 注入HAL层 */
@@ -207,4 +215,4 @@ namespace TaskManager {
             vTaskDelete(NULL);
         }
     }
-} // namespace TaskManager
+}  // namespace TaskManager

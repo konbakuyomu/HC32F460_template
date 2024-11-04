@@ -94,17 +94,20 @@
         {
             "label": "Clean Build",
             "type": "shell",
-            "command": "Remove-Item",
+            "command": "cmd",
             "args": [
-                "-Recurse",
-                "-Force",
+                "/c",
+                "rd",
+                "/S",
+                "/Q",
                 "${workspaceFolder}\\build"
             ],
-            "group": "build",
-            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "presentation": {
-                "reveal": "always",
-                "panel": "shared"
+                "reveal": "silent"
             }
         }
     ]

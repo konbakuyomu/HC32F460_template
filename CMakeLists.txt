@@ -48,19 +48,14 @@ add_executable(${PROJECT_NAME})
 # 添加启动文件
 target_sources(${PROJECT_NAME} PRIVATE ${STARTUP_FILE})
 
-# 9. 包含目录设置
+# 9. 子目录添加
 #----------------------------------------
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-)
-
-# 10. 子目录添加
-#----------------------------------------
+add_subdirectory(include)
 add_subdirectory(drivers)
 add_subdirectory(middlewares)
 add_subdirectory(source)
 
-# 11. 编译选项设置
+# 10. 编译选项设置
 #----------------------------------------
 target_compile_options(${PROJECT_NAME} PRIVATE
     # MCU 相关选项
@@ -80,7 +75,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wextra
 )
 
-# 12. 链接选项设置
+# 11. 链接选项设置
 #----------------------------------------
 target_link_options(${PROJECT_NAME} PRIVATE
     # MCU 相关选项
@@ -104,7 +99,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
     -lm
 )
 
-# 13. 后期构建命令
+# 12. 后期构建命令
 #----------------------------------------
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     # 复制 ELF 文件

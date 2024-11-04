@@ -58,11 +58,6 @@ namespace TaskManager
 extern "C" {
 #endif
 
-/**
- * @brief 创建应用程序任务
- *
- * 此函数用于创建应用程序中的各种任务。
- */
 void AppTaskCreate(void);
 
 #ifdef __cplusplus

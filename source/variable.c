@@ -18,51 +18,16 @@ TaskHandle_t CANTXTask_Handle = NULL;
 TaskHandle_t CANRXTask_Handle = NULL;
 QueueHandle_t xQueue_CanTx = NULL;
 
-/*------------------- 键值对线程锁 -------------------*/
-static SemaphoreHandle_t key_value_mutex_handle = NULL;
-
 /*---------------------- 串口 ----------------------*/
 uint8_t Host_RxBuf[ARRAY_LENGTH];
 uint8_t Host_TxBuf[ARRAY_LENGTH];
 
 /**
- * @brief 获取键值对线程锁
+ * @brief 安装中断处理函数
+ * @param pstcConfig 中断配置结构体
+ * @param u32Priority 中断优先级
  * @return void
  */
-static void key_value_take_key() { xSemaphoreTake(key_value_mutex_handle, portMAX_DELAY); }
-
-/**
- * @brief 释放键值对线程锁
- * @return void
- */
-static void key_value_give_key() { xSemaphoreGive(key_value_mutex_handle); }
-
-void key_value_mutex_init(void)
-{
-    key_value_mutex_handle = xSemaphoreCreateMutex();
-
-    key_value_mutex_cb_t cfg = {
-        .mutex_get_cb = key_value_take_key,
-        .mutex_give_cb = key_value_give_key,
-    };
-    key_value_mutex_register(&cfg);
-}
-
-void Key_Value_Init(void)
-{
-    // pwm
-    key_value_register(NULL, "PWM_start", PWM_start);
-    key_value_register(NULL, "PWM_stop", PWM_stop);
-    key_value_register(NULL, "PWM_setDutyCycle", PWM_setDutyCycle);
-    key_value_register(NULL, "PWM_setFrequency", PWM_setFrequency);
-    key_value_register(NULL, "PWM_setDirection", PWM_setDirection);
-    key_value_register(NULL, "PWM_getDirection", PWM_getDirection);
-
-    // uart
-    key_value_register(NULL, "USART4_SendData", USART_SendData);
-    // key_value_register(NULL, "USART4_SendData", USART4_DMA_TX_Start);
-}
-
 void INTC_IrqInstalHandler(const stc_irq_signin_config_t *pstcConfig, uint32_t u32Priority)
 {
     if (NULL != pstcConfig)
@@ -74,6 +39,12 @@ void INTC_IrqInstalHandler(const stc_irq_signin_config_t *pstcConfig, uint32_t u
     }
 }
 
+/**
+ * @brief 初始化动态缓冲区(串口)
+ * @param buffer 指向 uint8_t 指针的指针，用于存储分配的内存地址
+ * @param size 要分配的内存大小
+ * @return 成功时返回分配的内存地址，失败时返回 NULL
+ */
 uint8_t *init_dynamic_buffer(uint8_t **buffer, size_t size)
 {
     if (buffer == NULL || size == 0)

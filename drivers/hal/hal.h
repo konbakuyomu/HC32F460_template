@@ -34,21 +34,31 @@ class HAL
     static void global_key_value_init() { get()->_global_key_value_init(); }
     virtual void _global_key_value_init() {}
 
+    /* LED 配置 */
+    static void led_init() { get()->_led_init(); }
+    virtual void _led_init() {}
+    static void led_turn_on(const std::string &name) { get()->_led_turn_on(name); }
+    virtual void _led_turn_on(const std::string &name) {}
+    static void led_turn_off(const std::string &name) { get()->_led_turn_off(name); }
+    virtual void _led_turn_off(const std::string &name) {}
+    static void led_toggle(const std::string &name) { get()->_led_toggle(name); }
+    virtual void _led_toggle(const std::string &name) {}
+
     /* PWM 配置 */
     static void pwm_init() { get()->_pwm_init(); }
     virtual void _pwm_init() {}
-    static void pwm_start(size_t index) { get()->_pwm_start(index); }
-    virtual void _pwm_start(size_t index) {}
-    static void pwm_stop(size_t index) { get()->_pwm_stop(index); }
-    virtual void _pwm_stop(size_t index) {}
-    static void pwm_set_duty_cycle(size_t index, float duty_cycle) { get()->_pwm_set_duty_cycle(index, duty_cycle); }
-    virtual void _pwm_set_duty_cycle(size_t index, float duty_cycle) {}
-    static void pwm_set_frequency(size_t index, uint32_t frequency) { get()->_pwm_set_frequency(index, frequency); }
-    virtual void _pwm_set_frequency(size_t index, uint32_t frequency) {}
-    static void pwm_set_direction(size_t index, uint8_t direction) { get()->_pwm_set_direction(index, direction); }
-    virtual void _pwm_set_direction(size_t index, uint8_t direction) {}
-    static uint8_t pwm_get_direction(size_t index) { return get()->_pwm_get_direction(index); }
-    virtual uint8_t _pwm_get_direction(size_t index) { return 0; }
+    static void pwm_start(const std::string &name) { get()->_pwm_start(name); }
+    virtual void _pwm_start(const std::string &name) {}
+    static void pwm_stop(const std::string &name) { get()->_pwm_stop(name); }
+    virtual void _pwm_stop(const std::string &name) {}
+    static void pwm_set_duty_cycle(const std::string &name, float duty_cycle) { get()->_pwm_set_duty_cycle(name, duty_cycle); }
+    virtual void _pwm_set_duty_cycle(const std::string &name, float duty_cycle) {}
+    static void pwm_set_frequency(const std::string &name, uint32_t frequency) { get()->_pwm_set_frequency(name, frequency); }
+    virtual void _pwm_set_frequency(const std::string &name, uint32_t frequency) {}
+    static void pwm_set_direction(const std::string &name, uint8_t direction) { get()->_pwm_set_direction(name, direction); }
+    virtual void _pwm_set_direction(const std::string &name, uint8_t direction) {}
+    static uint8_t pwm_get_direction(const std::string &name) { return get()->_pwm_get_direction(name); }
+    virtual uint8_t _pwm_get_direction(const std::string &name) { return 0; }
 
     /* CAN 配置 */
     static void can_init() { get()->_can_init(); }
@@ -62,55 +72,4 @@ class HAL
     static void uart_send(void *data, size_t length) { get()->_uart_send(data, length); }
     virtual void _uart_send(void *data, size_t length) {}
 };
-#endif
-
-/* 函数定义 ------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-    /**
-     * @brief 启动PWM
-     * @param index PWM索引
-     */
-    void PWM_start(void *value, size_t index);
-
-    /**
-     * @brief 停止PWM
-     * @param index PWM索引
-     */
-    void PWM_stop(void *value, size_t index);
-
-    /**
-     * @brief 设置PWM占空比
-     * @param index PWM索引
-     * @param duty_cycle 占空比
-     */
-    void PWM_setDutyCycle(void *value, size_t index);
-
-    /**
-     * @brief 设置PWM频率
-     * @param index PWM索引
-     * @param frequency 频率
-     */
-    void PWM_setFrequency(void *value, size_t index);
-
-    /**
-     * @brief 设置PWM方向
-     * @param index PWM索引
-     * @param direction 方向
-     */
-    void PWM_setDirection(void *value, size_t index);
-
-    /**
-     * @brief 获取PWM方向
-     * @param index PWM索引
-     * @return 方向
-     */
-    void PWM_getDirection(void *value, size_t index);
-
-#ifdef __cplusplus
-}
 #endif

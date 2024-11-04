@@ -357,7 +357,6 @@ namespace BSP_USART {
      */
     void USART4::RX_DMA_TC_IrqCallback()
     {
-        BSP_LED_On(LED_GREEN);
         // 使用任务通知并发送数据
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // 注意：确保 u16DataToSend 的值不会超过任务通知的最大值
