@@ -1137,7 +1137,7 @@ void TMRA_Update_PWM_DutyCycle(CM_TMRA_TypeDef *TMRAx, uint32_t frequency, uint3
 {
     uint32_t u32CMPARAddr;
     uint32_t u32CompareValue;
-    uint32_t u32PeriodVal = (HCLK1_FREQ / frequency) - 1U;
+    uint32_t u32PeriodVal = (SYSTEM_PCLK1_FREQUENCY_HZ  / frequency) - 1U;
 
     // 参数有效性检查
     DDL_ASSERT(IS_TMRA_UNIT_CH(TMRAx, u32Ch));

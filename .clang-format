@@ -6,28 +6,30 @@ BasedOnStyle: LLVM                    # 基于LLVM的代码风格
 UseTab: Never                         # 不使用制表符,使用空格
 IndentWidth: 4                        # 缩进宽度为4个空格
 TabWidth: 4                           # 制表符宽度为4个空格
-NamespaceIndentation: All             # 所有命名空间内容都缩进
-IndentExternBlock: Indent             # 缩进extern块
-IndentPPDirectives: BeforeHash        # 预处理指令缩进到#之前
+NamespaceIndentation: None            # 命名空间内容不缩进
+IndentExternBlock: NoIndent           # extern块不缩进
+IndentPPDirectives: None              # 预处理指令不缩进
 
 # 大括号换行设置
-BreakBeforeBraces: Custom             # 自定义大括号换行规则
+BreakBeforeBraces: Linux              # 使用Linux风格的大括号规则
 BraceWrapping:                        # 大括号换行设置
-  AfterClass: true                    # 类定义后换行
-  AfterControlStatement: true         # 控制语句后换行
+  AfterClass: false                   # 类定义后不换行
+  AfterControlStatement: false        # 控制语句后不换行
   AfterFunction: true                 # 函数定义后换行
   AfterNamespace: false               # 命名空间定义后不换行
-  AfterExternBlock: true              # extern块后换行
+  AfterExternBlock: false             # extern块后不换行
+  AfterEnum: false                    # 枚举定义后不换行
+  BeforeElse: false                   # else前不换行
 
 # 对齐相关
 AlignConsecutiveMacros: true          # 对齐连续的宏定义
 AlignTrailingComments: true           # 对齐尾随注释
 
 # 行长度设置
-ColumnLimit: 0                        # 不限制每行字符数
+ColumnLimit: 100                      # 每行最大100字符
 
 # 参数格式化
-BinPackArguments: false               # 不将函数参数打包到一行
-BinPackParameters: false              # 不将函数参数打包到一行
-AllowAllArgumentsOnNextLine: false    # 不允许所有参数在下一行
-AllowAllParametersOfDeclarationOnNextLine: false  # 不允许声明的所有参数在下一行
+BinPackArguments: true                # 允许将函数参数打包到一行
+BinPackParameters: true               # 允许将函数参数打包到一行
+AllowAllArgumentsOnNextLine: true     # 允许所有参数在下一行
+AllowAllParametersOfDeclarationOnNextLine: true  # 允许声明的所有参数在下一行

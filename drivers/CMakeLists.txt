@@ -46,102 +46,48 @@ set(HC32_LL_SOURCES
     hc32_ll_driver/src/hc32f460_ll_interrupts_share.c
 )
 
-# 2. CMSIS源文件
+# 2. 驱动层源文件
 #----------------------------------------
-set(CMSIS_SOURCES
-    cmsis/Device/HDSC/hc32f4xx/Source/system_hc32f460.c
+set(HARDWARE_SOURCES
+    hardware/can/drvCan.cpp
+    hardware/motor/drvMotor.cpp
+    hardware/uart/drvUart.cpp
 )
 
-# 3. BSP板级支持包源文件
-#----------------------------------------
-# 3.1 评估板相关源文件
-set(BSP_BOARD_SOURCES
-    bsp/ev_hc32f460_lqfp100_v2/ev_hc32f460_lqfp100_v2_24cxx.c
-    bsp/ev_hc32f460_lqfp100_v2/ev_hc32f460_lqfp100_v2_w25qxx.c
-    bsp/ev_hc32f460_lqfp100_v2/ev_hc32f460_lqfp100_v2_wm8731.c
-    bsp/ev_hc32f460_lqfp100_v2/ev_hc32f460_lqfp100_v2.c
-)
-
-# 3.2 组件源文件
-set(BSP_COMPONENT_SOURCES
-    bsp/components/24cxx/24cxx.c
-    bsp/components/malloc/malloc.c
-    bsp/components/malloc/memory_management.cpp
-    bsp/components/w25qxx/w25qxx.c
-    bsp/components/wm8731/wm8731.c
-)
-
-# 3.3 外设驱动源文件
-set(BSP_PERIPHERAL_SOURCES
-    bsp/cpu_utilization/bsp_cpu.c
-    bsp/usart/printf_usart.c
-    bsp/usart/bsp_uart.cpp
-    bsp/pwm/bsp_pwm.cpp
-    bsp/can/bsp_can.cpp
-    bsp/led/bsp_led.cpp
-)
-
-# 4. 应用层源文件
-#----------------------------------------
-set(APP_SOURCES
-    drv/drv_hal.cpp
-    hal/hal.cpp
-    app/taskManage.cpp
-)
-
-# 5. 合并所有源文件
+# 3. 合并所有源文件
 #----------------------------------------
 set(DRIVER_SOURCES
     ${HC32_LL_SOURCES}
-    ${CMSIS_SOURCES}
-    ${BSP_BOARD_SOURCES}
-    ${BSP_COMPONENT_SOURCES}
-    ${BSP_PERIPHERAL_SOURCES}
-    ${APP_SOURCES}
+    ${HARDWARE_SOURCES}
 )
 
-# 6. 添加源文件到项目
+# 4. 添加源文件到项目
 #----------------------------------------
 target_sources(${PROJECT_NAME} PRIVATE ${DRIVER_SOURCES})
 
-# 7. 包含目录设置
+# 5. 包含目录设置
 #----------------------------------------
-# 7.1 CMSIS头文件路径
+# 5.1 CMSIS头文件路径
 set(CMSIS_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Device/HDSC/hc32f4xx/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Include
 )
 
-# 7.2 HC32 LL驱动头文件路径
+# 5.2 HC32 LL驱动头文件路径
 set(HC32_LL_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/hc32_ll_driver/inc
 )
 
-# 7.3 BSP头文件路径
-set(BSP_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/ev_hc32f460_lqfp100_v2
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/components/24cxx
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/components/w25qxx
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/components/wm8731
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/components/malloc
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/can
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/led
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/pwm
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/usart
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/cpu_utilization
+# 5.3 驱动层头文件路径
+set(HARDWARE_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/hardware/can
+    ${CMAKE_CURRENT_SOURCE_DIR}/hardware/motor
+    ${CMAKE_CURRENT_SOURCE_DIR}/hardware/uart
 )
 
-# 7.4 应用层头文件路径
-set(APP_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/drv
-    ${CMAKE_CURRENT_SOURCE_DIR}/app
-    ${CMAKE_CURRENT_SOURCE_DIR}/hal
-)
-
-# 7.5 添加所有包含路径
+# 6. 添加所有包含路径
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMSIS_INCLUDE_DIRS}
     ${HC32_LL_INCLUDE_DIRS}
-    ${BSP_INCLUDE_DIRS}
-    ${APP_INCLUDE_DIRS}
+    ${HARDWARE_INCLUDE_DIRS}
 )

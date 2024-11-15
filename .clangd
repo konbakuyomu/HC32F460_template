@@ -1,7 +1,7 @@
 CompileFlags:
   Add: [
-    "-ferror-limit=0",        # 禁用错误限制
-    "-include", "FreeRTOS.h", # 强制在所有文件前包含 FreeRTOS.h
+    "-ferror-limit=0",          # 禁用错误限制
+    "-include", "FreeRTOS.h",   # 强制在所有文件前包含 FreeRTOS.h
   ]
 
 Diagnostics:
@@ -11,5 +11,6 @@ Diagnostics:
     -Wunused-parameter,                     # 禁用未使用参数的警告
     -Wreserved-identifier,                  # 抑制标识符保留相关的警告
     -Wredefinition-different-kind,          # 抑制重定义警告
-    -Wmissing-designated-field-initializers # 抑制未初始化结构体成员警告
+    -Wmissing-designated-field-initializers,# 抑制未初始化结构体成员警告
+    -Wunknown-pragmas,                      # 抑制未知的预处理指令警告
   ]

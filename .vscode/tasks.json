@@ -11,7 +11,7 @@
                 "-speed", "10000",
                 "-autoconnect", "1",
                 "-jtagconf", "-1,-1",
-                "-CommanderScript", "${workspaceFolder}/scripts/jlink/download.jlink"
+                "-CommanderScript", "${workspaceFolder}/tools/jlink/download.jlink"
             ],
             "group": {
                 "kind": "build",
@@ -28,7 +28,7 @@
                 "-if", "SWD",
                 "-speed", "10000",
                 "-autoconnect", "1",
-                "-CommanderScript", "${workspaceFolder}/scripts/jlink/download.jlink"
+                "-CommanderScript", "${workspaceFolder}/tools/jlink/download.jlink"
             ],
             "group": "build",
             "problemMatcher": []
@@ -43,7 +43,7 @@
                 "-speed", "10000",
                 "-autoconnect", "1",
                 "-jtagconf", "-1,-1",
-                "-CommanderScript", "${workspaceFolder}/scripts/jlink/reset.jlink"
+                "-CommanderScript", "${workspaceFolder}/tools/jlink/reset.jlink"
             ],
             "group": "build",
             "problemMatcher": []
@@ -57,7 +57,7 @@
                 "-if", "SWD",
                 "-speed", "10000",
                 "-autoconnect", "1",
-                "-CommanderScript", "${workspaceFolder}/scripts/jlink/reset.jlink"
+                "-CommanderScript", "${workspaceFolder}/tools/jlink/reset.jlink"
             ],
             "group": "build",
             "problemMatcher": []
@@ -72,7 +72,7 @@
                 "-speed", "10000",
                 "-autoconnect", "1",
                 "-jtagconf", "-1,-1",
-                "-CommanderScript", "${workspaceFolder}/scripts/jlink/erase.jlink"
+                "-CommanderScript", "${workspaceFolder}/tools/jlink/erase.jlink"
             ],
             "group": "build",
             "problemMatcher": []
@@ -86,7 +86,7 @@
                 "-if", "SWD",
                 "-speed", "10000",
                 "-autoconnect", "1",
-                "-CommanderScript", "${workspaceFolder}/scripts/jlink/erase.jlink"
+                "-CommanderScript", "${workspaceFolder}/tools/jlink/erase.jlink"
             ],
             "group": "build",
             "problemMatcher": []
@@ -96,11 +96,8 @@
             "type": "shell",
             "command": "cmd",
             "args": [
-                "/c",
-                "rd",
-                "/S",
-                "/Q",
-                "${workspaceFolder}\\build"
+                "/c", 
+                "if exist ${workspaceFolder}\\build (del /f /s /q ${workspaceFolder}\\build\\* && rmdir /s /q ${workspaceFolder}\\build)"
             ],
             "group": {
                 "kind": "build",

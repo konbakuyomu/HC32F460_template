@@ -205,7 +205,7 @@ __WEAKDEF int32_t SysTick_Init(uint32_t u32Freq)
  */
 __WEAKDEF void SysTick_Delay(uint32_t u32Delay)
 {
-    const uint32_t tickStart = SysTick_GetTick();
+    const uint32_t tickStart = SysTickgetTickImpl();
     uint32_t tickEnd         = u32Delay;
     uint32_t tickMax;
 
@@ -215,7 +215,7 @@ __WEAKDEF void SysTick_Delay(uint32_t u32Delay)
         if ((u32Delay >= tickMax) || ((tickMax - u32Delay) < m_u32TickStep)) {
             tickEnd = tickMax;
         }
-        while ((SysTick_GetTick() - tickStart) < tickEnd) {
+        while ((SysTickgetTickImpl() - tickStart) < tickEnd) {
         }
     }
 }
@@ -236,7 +236,7 @@ __WEAKDEF void SysTick_IncTick(void)
  * @param None
  * @retval Tick value
  */
-__WEAKDEF uint32_t SysTick_GetTick(void)
+__WEAKDEF uint32_t SysTickgetTickImpl(void)
 {
     return m_u32TickCount;
 }

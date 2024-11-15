@@ -55,7 +55,7 @@ extern "C"
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
-#define HCLK1_FREQ (100000000U) // 100 MHz
+#define SYSTEM_PCLK1_FREQUENCY_HZ  (100000000U) // 100 MHz
 
 /**
  * @defgroup TMRA_Global_Types TMRA Global Types

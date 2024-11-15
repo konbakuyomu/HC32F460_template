@@ -4,7 +4,7 @@
 /* 确保定义仅被编译器使用,而不是汇编器 */
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
   #include "hc32_ll.h"
-  #include "bsp_cpu.h"
+  #include "cpuUtilization.h"
   extern uint32_t SystemCoreClock;
 #endif
 

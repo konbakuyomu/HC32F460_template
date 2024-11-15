@@ -74,7 +74,7 @@ void DDL_DelayUS(uint32_t u32Count);
 int32_t SysTick_Init(uint32_t u32Freq);
 void SysTick_Delay(uint32_t u32Delay);
 void SysTick_IncTick(void);
-uint32_t SysTick_GetTick(void);
+uint32_t SysTickgetTickImpl(void);
 void SysTick_Suspend(void);
 void SysTick_Resume(void);
 
