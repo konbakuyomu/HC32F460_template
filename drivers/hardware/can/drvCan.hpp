@@ -8,12 +8,7 @@
 #pragma once
 #ifdef __cplusplus
 
-#include "hc32_ll.h"
-#include <array>
-#include <functional>
-#include <map>
-#include <memory>
-#include <mutex>
+#include "hal.hpp"
 
 namespace DRV
 {
@@ -36,9 +31,6 @@ class CANDriver
     void initCANHandlers();
     void sendData(const void *value);
     void processReceivedData();
-    void registerReceiveCallback(uint32_t canId,
-                                 std::function<void(const stc_can_rx_frame_t &)> callback);
-
     CANDriver() { initReceiveBuffer(); }
     ~CANDriver() = default;
 
@@ -46,17 +38,17 @@ class CANDriver
     // 禁止拷贝和赋值
     CANDriver(const CANDriver &) = delete;
     CANDriver &operator=(const CANDriver &) = delete;
+    void registerReceiveCallback(uint32_t canId,
+                                 std::function<void(const stc_can_rx_frame_t &)> callback);
     bool initReceiveBuffer();
     void processCANReceivedFrame(const stc_can_rx_frame_t &rxData);
     static std::unique_ptr<CANDriver> mInstance;
     std::array<stc_can_rx_frame_t, 50> mRxFrames;
+    std::map<uint32_t, std::function<void(const stc_can_rx_frame_t &)>> mCallbacks;
 
   private:
     void handleTest1(const stc_can_rx_frame_t &frame);
     void handleTest2(const stc_can_rx_frame_t &frame);
-
-    // 存储CAN ID和对应的回调函数
-    std::map<uint32_t, std::function<void(const stc_can_rx_frame_t &)>> mCallbacks;
 };
 } // namespace DRV
 

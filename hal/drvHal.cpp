@@ -127,3 +127,8 @@ void DRV_HAL::sendUartImpl(void *data, size_t length)
  * @brief EIRQ外部中断初始化
  */
 void DRV_HAL::initEirqImpl() { initBspEirq(); }
+
+/**
+ * @brief GPIO初始化
+ */
+void DRV_HAL::initGpioImpl() { initBspGpio(); }

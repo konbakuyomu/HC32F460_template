@@ -39,7 +39,6 @@ class TaskCreator
     TaskCreator &operator=(const TaskCreator &) = delete;
 
     void HAL_init();
-    void DRV_init();
     void createTask();
     void createQueues();
     void createEventGroups();
@@ -47,7 +46,8 @@ class TaskCreator
 
     static void LEDTask(void *pvParameters);
     static void MotorTask(void *pvParameters);
-    static void UartTask(void *pvParameters);
+    static void UartTXTask(void *pvParameters);
+    static void UartRXTask(void *pvParameters);
     static void CANTXTask(void *pvParameters);
     static void CANRXTask(void *pvParameters);
 };

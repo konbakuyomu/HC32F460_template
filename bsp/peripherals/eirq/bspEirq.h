@@ -15,29 +15,33 @@ extern "C" {
 
 /* 宏定义 --------------------------------------------------------------------*/
 
-#define RX_JM_EXTINT  (EXTINT_CH06)
-#define RX_JM_IRQn    (INT032_IRQn)
-#define RX_JM_INT_SRC (INT_SRC_PORT_EIRQ6)
-#define RX_JM_PORT    (GPIO_PORT_D)
-#define RX_JM_PIN     (GPIO_PIN_06)
+// 入口感应
+#define EntranceSensorExtInt (EXTINT_CH06)
+#define EntranceSensorIRQn   (INT032_IRQn)
+#define EntranceSensorIntSrc (INT_SRC_PORT_EIRQ6)
+#define EntranceSensorPort   (GPIO_PORT_D)
+#define EntranceSensorPin    (GPIO_PIN_06)
 
-#define RX_CM_EXTINT  (EXTINT_CH04)
-#define RX_CM_IRQn    (INT034_IRQn)
-#define RX_CM_INT_SRC (INT_SRC_PORT_EIRQ4)
-#define RX_CM_PORT    (GPIO_PORT_D)
-#define RX_CM_PIN     (GPIO_PIN_04)
+// 出口感应
+#define ExitSensorExtInt (EXTINT_CH04)
+#define ExitSensorIRQn   (INT034_IRQn)
+#define ExitSensorIntSrc (INT_SRC_PORT_EIRQ4)
+#define ExitSensorPort   (GPIO_PORT_D)
+#define ExitSensorPin    (GPIO_PIN_04)
 
-#define RX_SG_EXTINT  (EXTINT_CH05)
-#define RX_SG_IRQn    (INT033_IRQn)
-#define RX_SG_INT_SRC (INT_SRC_PORT_EIRQ5)
-#define RX_SG_PORT    (GPIO_PORT_D)
-#define RX_SG_PIN     (GPIO_PIN_05)
+// 身高感应
+#define HeightSensorExtInt (EXTINT_CH05)
+#define HeightSensorIRQn   (INT033_IRQn)
+#define HeightSensorIntSrc (INT_SRC_PORT_EIRQ5)
+#define HeightSensorPort   (GPIO_PORT_D)
+#define HeightSensorPin    (GPIO_PIN_05)
 
-#define RX_ZW_EXTINT  (EXTINT_CH03)
-#define RX_ZW_IRQn    (INT035_IRQn)
-#define RX_ZW_INT_SRC (INT_SRC_PORT_EIRQ3)
-#define RX_ZW_PORT    (GPIO_PORT_D)
-#define RX_ZW_PIN     (GPIO_PIN_03)
+// 占位感应
+#define OccupancySensorExtInt (EXTINT_CH03)
+#define OccupancySensorIRQn   (INT035_IRQn)
+#define OccupancySensorIntSrc (INT_SRC_PORT_EIRQ3)
+#define OccupancySensorPort   (GPIO_PORT_D)
+#define OccupancySensorPin    (GPIO_PIN_03)
 
 /* 函数声明 ------------------------------------------------------------------*/
 void initBspEirq(void);

@@ -8,26 +8,50 @@
 #pragma once
 #ifdef __cplusplus
 
+#include "FreeRTOS.h"
+#include "event_groups.h"
+#include "timers.h"
 #include "hal.hpp"
 
 namespace DRV
 {
-class USART
+class UARTDriver
 {
-  private:
-    static unsigned short calculateChecksum(uint8_t *buf, int len);
-    static std::unique_ptr<USART> m_usart;
-    static USART *getInstance();
-    static void init();
+  public:
+    enum class Command : uint8_t {
+        ReportRealTimeData = 0x10,
+        ControlEntranceGate = 0x20,
+        ControlExitGate = 0x21,
+        ControlAlarmLight = 0x22,
+        ControlFaultLight = 0x23
+    };
 
-  private:
-    // CRC计算相关常量
-    static constexpr uint16_t CRC_INIT = 0xFFFF;
-    static constexpr uint16_t CRC_POLY = 0xA001; // 0x8005的循环右移16位结果
+    enum class DataStatus : uint8_t { Off = 0x00, On = 0x01 };
 
   public:
-    void parseData(void *buf, uint32_t len);
-    void sendData(void *buf, uint32_t len);
+    static UARTDriver *getInstance();
+    static void sendPersonStandingStatus(TimerHandle_t xTimer);
+    void initUARTHandlers();
+    void processReceivedData(uint8_t *buffer, size_t size);
+    UARTDriver() = default;
+    ~UARTDriver() = default;
+
+  private:
+    // 禁止拷贝和赋值
+    UARTDriver(const UARTDriver &) = delete;
+    UARTDriver &operator=(const UARTDriver &) = delete;
+    void registerReceiveCallback(uint8_t command, std::function<void(uint8_t)> callback);
+    static unsigned short calculateChecksum(const uint8_t *receivedBuffer, size_t receivedSize);
+    static std::unique_ptr<UARTDriver> m_usart;
+
+    // 存储命令和对应的回调函数
+    std::map<uint8_t, std::function<void(uint8_t)>> m_callbacks;
+
+  private:
+    void handleEntranceBarrier(uint8_t data);
+    void handleExitGate(uint8_t data);
+    void handleAlarmLight(uint8_t data);
+    void handleFaultLight(uint8_t data);
 };
 
 }; // namespace DRV

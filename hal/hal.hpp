@@ -9,10 +9,13 @@
 
 #include "hc32_ll.h"
 #include <array>
+#include <functional>
 #include <bitset>
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -93,6 +96,10 @@ class HAL
     /* EIRQ 配置 */
     static void initEirq() { get()->initEirqImpl(); }
     virtual void initEirqImpl() {}
+
+    /* GPIO 配置 */
+    static void initGpio() { get()->initGpioImpl(); }
+    virtual void initGpioImpl() {}
 };
 
 #endif

@@ -28,32 +28,40 @@ enum MotorState {
 class MotorController
 {
   private:
-    static std::unique_ptr<MotorController> mMotor;
+    static std::unique_ptr<MotorController> mMotor; // 单例
 
   public:
     MotorController();
-    void startOpen();
-    void startClose();
-    void retryOpen();
-    void retryClose();
     void updateStatus(EventBits_t xEventGroupBits);
-    MotorState getState();
-    void notifyFailed();
+    static MotorController *getInstance();
+    void resetFromEmergency();
 
   public:
-    static void init();
-    static MotorController *getInstance();
-    static void motorTimeoutCallback(TimerHandle_t xTimer);
+    MotorState getEntranceGateState();
+    void startOpenEntranceGate();
+    void startCloseEntranceGate();
+    void retryOpenEntranceGate();
+    void retryCloseEntranceGate();
+    void handleEntranceGateFailure();
+    static void entranceGateTimeoutCallback(TimerHandle_t xTimer);
 
   private:
-    MotorState currentState; // 当前状态
-    int retryCount;          // 当前重试次数
-    const int maxRetryCount; // 最大重试次数
+    MotorState entranceGateCurrentState; // 进门电机当前状态
+    int entranceGateRetryCount;          // 进门电机当前重试次数
+    const int entranceGateMaxRetryCount; // 进门电机最大重试次数
+    void entranceMotorForward();
+    void entranceMotorReverse();
+    void entranceMotorStop();
+    void handleExitGateFailure();
+
+  public:
+    MotorState getExitGateState();
+    void initExitGate();
+    void startOpenExitGate();
+    void startCloseExitGate();
 
   private:
-    void motorForward();
-    void motorReverse();
-    void motorStop();
+    MotorState exitGateCurrentState; // 出门电机当前状态
 };
 } // namespace DRV
 

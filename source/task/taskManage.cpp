@@ -43,7 +43,6 @@ void TaskCreator::createTasks()
     taskENTER_CRITICAL();
 
     HAL_init();
-    DRV_init();
     createQueues();
     createEventGroups();
     createTimers();
@@ -67,15 +66,8 @@ void TaskCreator::HAL_init()
     HAL::initCan();
     /* 初始化EIRQ */
     HAL::initEirq();
-}
-
-/**
- * @brief 初始化驱动层
- */
-void TaskCreator::DRV_init()
-{
-    /* 初始化电机驱动 */
-    DRV::MotorController::init();
+    /* 初始化GPIO */
+    HAL::initGpio();
 }
 
 /**
@@ -88,23 +80,33 @@ void TaskCreator::createTask()
     if (xReturn != pdPASS) {
         // 处理错误
     }
+
+    xReturn = xTaskCreate(UartTXTask, "UartTXTask", configMINIMAL_STACK_SIZE, nullptr, 3,
+                          &uartTxTaskHandle);
+    if (xReturn != pdPASS) {
+        // 处理错误
+    }
+
+    xReturn = xTaskCreate(UartRXTask, "UartRXTask", configMINIMAL_STACK_SIZE, nullptr, 3,
+                          &uartRxTaskHandle);
+    if (xReturn != pdPASS) {
+        // 处理错误
+    }
+
     xReturn =
-        xTaskCreate(UartTask, "UartTask", configMINIMAL_STACK_SIZE, nullptr, 3, &uartTaskHandle);
+        xTaskCreate(MotorTask, "MotorTask", configMINIMAL_STACK_SIZE, nullptr, 3, &motorTaskHandle);
     if (xReturn != pdPASS) {
         // 处理错误
     }
-    xReturn = xTaskCreate(MotorTask, "MotorTask", configMINIMAL_STACK_SIZE, nullptr, 3,
-                          &motorTaskHandle);
+
+    xReturn =
+        xTaskCreate(CANRXTask, "CANRXTask", configMINIMAL_STACK_SIZE, nullptr, 3, &canRxTaskHandle);
     if (xReturn != pdPASS) {
         // 处理错误
     }
-    xReturn = xTaskCreate(CANRXTask, "CANRXTask", configMINIMAL_STACK_SIZE, nullptr, 3,
-                          &canRxTaskHandle);
-    if (xReturn != pdPASS) {
-        // 处理错误
-    }
-    xReturn = xTaskCreate(CANTXTask, "CANTXTask", configMINIMAL_STACK_SIZE, nullptr, 3,
-                          &canTxTaskHandle);
+
+    xReturn =
+        xTaskCreate(CANTXTask, "CANTXTask", configMINIMAL_STACK_SIZE, nullptr, 3, &canTxTaskHandle);
     if (xReturn != pdPASS) {
         // 处理错误
     }
@@ -117,6 +119,7 @@ void TaskCreator::createQueues()
 {
     // 实现创建队列的逻辑
     canTxQueueHandle = xQueueCreate(10, sizeof(stc_can_tx_frame_t));
+    uartTxQueueHandle = xQueueCreate(10, sizeof(stc_uart_tx_frame_t));
 }
 
 /**
@@ -133,10 +136,15 @@ void TaskCreator::createEventGroups()
  */
 void TaskCreator::createTimers()
 {
-    // 实现创建定时器的逻辑
+    // 进门电机超时检测定时器
     MotorTimeoutTimer = xTimerCreate("MotorTimeoutTimer", pdMS_TO_TICKS(50000), pdFALSE,
                                      DRV::MotorController::getInstance(),
-                                     DRV::MotorController::motorTimeoutCallback);
+                                     DRV::MotorController::entranceGateTimeoutCallback);
+    // 人物站立检测定时器
+    PersonStandingStatusTimer =
+        xTimerCreate("PersonStandingStatusTimer", pdMS_TO_TICKS(1000), pdFALSE, nullptr,
+                     DRV::UARTDriver::sendPersonStandingStatus);
+    xTimerStart(PersonStandingStatusTimer, 0);
 }
 
 /**
@@ -161,11 +169,14 @@ void TaskCreator::MotorTask(void *pvParameters)
 {
     // 使用底层类型来定义等待的标志位
     const EventBits_t xBitsToWaitFor =
-        EVENT_DOOR_ENTRY_MOTOR | EVENT_DOOR_EXIT_MOTOR | EVENT_HEIGHT_SENSOR | EVENT_OCCUPANCY_SENSOR;
+        EVENT_DOOR_ENTRY_SENSOR | EVENT_DOOR_EXIT_SENSOR | EVENT_HEIGHT_SENSOR |
+        EVENT_OCCUPANCY_SENSOR | EVENT_ENTRY_MOTOR_ON | EVENT_EXIT_MOTOR_ON |
+        EVENT_ENTRY_MOTOR_OFF | EVENT_EXIT_MOTOR_OFF | EVENT_ALARM_LED_ON | EVENT_ALARM_LED_OFF |
+        EVENT_FAULT_LED_ON | EVENT_FAULT_LED_OFF | EVENT_EMERGENCY_STOP;
     EventBits_t xEventGroupBits;
 
     auto motorController = DRV::MotorController::getInstance();
-    motorController->startOpen();
+    motorController->initExitGate();
 
     for (;;) {
         xEventGroupBits = xEventGroupWaitBits(motorControlEventGroupHandle, xBitsToWaitFor,
@@ -178,10 +189,35 @@ void TaskCreator::MotorTask(void *pvParameters)
 }
 
 /**
+ * @brief Uart发送任务的静态回调函数
+ * @param pvParameters 任务参数
+ */
+void TaskCreator::UartTXTask(void *pvParameters)
+{
+    stc_uart_tx_frame_t tx_frame;
+    bool firstRun = true;
+
+    // 实现Uart发送任务的逻辑
+    for (;;) {
+        while (xQueueReceive(uartTxQueueHandle, &tx_frame, portMAX_DELAY) == pdTRUE) {
+            // 第一次不执行等待UART发送完成，因为还没有发送过
+            if (!firstRun)
+                // 等待UART发送完成
+                ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+            else
+                // 设置为false，下次发送时等待UART发送完成
+                firstRun = false;
+
+            HAL::sendUart(tx_frame.data, tx_frame.length);
+        }
+    }
+}
+
+/**
  * @brief Uart任务的静态回调函数
  * @param pvParameters 任务参数
  */
-void TaskCreator::UartTask(void *pvParameters)
+void TaskCreator::UartRXTask(void *pvParameters)
 {
     uint32_t u32NotificationValue;
 
@@ -189,10 +225,8 @@ void TaskCreator::UartTask(void *pvParameters)
     for (;;) {
         if (xTaskNotifyWait(0, ULONG_MAX, &u32NotificationValue, portMAX_DELAY) == pdPASS) {
             uint16_t u16ReceivedLength = (uint16_t)u32NotificationValue;
-            std::copy_n(hostReceiveBuffer, u16ReceivedLength,
-                        hostTransmitBuffer);                      // 复制接收到的数据到发送缓冲区
-            std::fill_n(hostReceiveBuffer, u16ReceivedLength, 0); // 使用std::fill_n清空接收缓冲区
-            HAL::sendUart((void *)hostTransmitBuffer, u16ReceivedLength);
+            auto uartDriver = DRV::UARTDriver::getInstance();
+            uartDriver->processReceivedData(hostReceiveBuffer, u16ReceivedLength);
         }
     }
 }

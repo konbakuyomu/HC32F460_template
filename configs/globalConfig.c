@@ -14,16 +14,21 @@
 TaskHandle_t appTaskCreateHandle = NULL;
 TaskHandle_t ledTaskHandle = NULL;
 TaskHandle_t motorTaskHandle = NULL;
-TaskHandle_t uartTaskHandle = NULL;
+TaskHandle_t uartTxTaskHandle = NULL;  
+TaskHandle_t uartRxTaskHandle = NULL;
 TaskHandle_t canTxTaskHandle = NULL;
 TaskHandle_t canRxTaskHandle = NULL;
+QueueHandle_t uartTxQueueHandle = NULL;
 QueueHandle_t canTxQueueHandle = NULL;
 EventGroupHandle_t motorControlEventGroupHandle = NULL;
 TimerHandle_t MotorTimeoutTimer = NULL;
+TimerHandle_t PersonStandingStatusTimer = NULL;
 
 /*---------------------- 串口 ----------------------*/
 uint8_t hostReceiveBuffer[HOST_BUFFER_LENGTH];
-uint8_t hostTransmitBuffer[HOST_BUFFER_LENGTH];
+
+/*--------------------- 标志位 ---------------------*/
+bool isPersonStanding = false;
 
 /**
  * @brief 安装中断处理函数

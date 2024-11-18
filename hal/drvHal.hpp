@@ -41,6 +41,9 @@ class DRV_HAL : public HAL
 
   public:
     void initEirqImpl() override;
+
+  public:
+    void initGpioImpl() override;
 };
 
 #endif

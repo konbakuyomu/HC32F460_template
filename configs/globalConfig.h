@@ -53,6 +53,7 @@ extern "C" {
 /* bsp 头文件 */
 #include "bspCan.h"
 #include "bspEirq.h"
+#include "bspGpio.h"
 #include "bspUart4.h"
 #include "printfUart.h"
 
@@ -62,10 +63,19 @@ extern "C" {
 #define MOTOR_DIRECTION_REVERSE   (1)          // 反转
 #define HOST_BUFFER_LENGTH        (50U)        // 数组长度
 #define USART4_CONFIG             (0)          // USART4配置
-#define EVENT_DOOR_ENTRY_MOTOR    (1 << 0)     // 进门电机事件
-#define EVENT_DOOR_EXIT_MOTOR     (1 << 1)     // 出门电机事件
+#define EVENT_DOOR_ENTRY_SENSOR   (1 << 0)     // 进门感应事件
+#define EVENT_DOOR_EXIT_SENSOR    (1 << 1)     // 出门感应事件
 #define EVENT_HEIGHT_SENSOR       (1 << 2)     // 身高感应事件
 #define EVENT_OCCUPANCY_SENSOR    (1 << 3)     // 占位感应事件
+#define EVENT_ENTRY_MOTOR_ON      (1 << 4)     // 进门电机开启
+#define EVENT_ENTRY_MOTOR_OFF     (1 << 5)     // 进门电机关闭
+#define EVENT_EXIT_MOTOR_ON       (1 << 6)     // 出门电机开启
+#define EVENT_EXIT_MOTOR_OFF      (1 << 7)     // 出门电机关闭
+#define EVENT_ALARM_LED_ON        (1 << 8)     // 报警指示灯开启
+#define EVENT_ALARM_LED_OFF       (1 << 9)     // 报警指示灯关闭
+#define EVENT_FAULT_LED_ON        (1 << 10)    // 故障指示灯开启
+#define EVENT_FAULT_LED_OFF       (1 << 11)    // 故障指示灯关闭
+#define EVENT_EMERGENCY_STOP      (1 << 12)    // 紧急停止事件
 
 /* 联合体 ------------------------------------------------------------------*/
 
@@ -87,18 +97,29 @@ typedef union {
 
 /* 结构体 ------------------------------------------------------------------*/
 
+/**
+ * @brief Uart发送数据结构体
+ */
+typedef struct {
+    uint8_t *data;
+    size_t length;
+} stc_uart_tx_frame_t;
+
 /* 全局变量 ----------------------------------------------------------------*/
 extern TaskHandle_t appTaskCreateHandle;
 extern TaskHandle_t ledTaskHandle;
 extern TaskHandle_t motorTaskHandle;
-extern TaskHandle_t uartTaskHandle;
+extern TaskHandle_t uartTxTaskHandle;
+extern TaskHandle_t uartRxTaskHandle;
 extern TaskHandle_t canTxTaskHandle;
 extern TaskHandle_t canRxTaskHandle;
+extern QueueHandle_t uartTxQueueHandle;
 extern QueueHandle_t canTxQueueHandle;
 extern EventGroupHandle_t motorControlEventGroupHandle;
 extern TimerHandle_t MotorTimeoutTimer;
+extern TimerHandle_t PersonStandingStatusTimer;
 extern uint8_t hostReceiveBuffer[HOST_BUFFER_LENGTH];
-extern uint8_t hostTransmitBuffer[HOST_BUFFER_LENGTH];
+extern bool isPersonStanding;
 /* 函数 -------------------------------------------------------------------*/
 
 void installInterruptHandler(const stc_irq_signin_config_t *pstcConfig, uint32_t u32Priority);
@@ -116,7 +137,7 @@ uint8_t *createDynamicBuffer(uint8_t **buffer, size_t size);
 
 /* drv 头文件 */
 #include "drvCan.hpp"
-#include "drv_hal.hpp"
+#include "drvHal.hpp"
 #include "drvMotor.hpp"
 #include "drvUart.hpp"
 #include "keyValueMap.hpp"

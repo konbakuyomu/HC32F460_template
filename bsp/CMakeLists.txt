@@ -22,6 +22,7 @@ set(BSP_PERIPHERAL_SOURCES
     peripherals/can/bspCan.c
     peripherals/cpu_utilization/cpuUtilization.c
     peripherals/eirq/bspEirq.c
+    peripherals/gpio/bspGpio.c
     peripherals/led/bspLed.cpp
     peripherals/pwm/bspPwm.cpp
     peripherals/uart/bspUart4.c
@@ -52,6 +53,7 @@ set(BSP_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/peripherals/can
     ${CMAKE_CURRENT_SOURCE_DIR}/peripherals/cpu_utilization
     ${CMAKE_CURRENT_SOURCE_DIR}/peripherals/eirq
+    ${CMAKE_CURRENT_SOURCE_DIR}/peripherals/gpio
     ${CMAKE_CURRENT_SOURCE_DIR}/peripherals/led
     ${CMAKE_CURRENT_SOURCE_DIR}/peripherals/pwm
     ${CMAKE_CURRENT_SOURCE_DIR}/peripherals/uart
