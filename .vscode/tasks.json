@@ -8,7 +8,7 @@
             "args": [
                 "-device", "${config:mcu.device}",
                 "-if", "JTAG",
-                "-speed", "10000",
+                "-speed", "20000",
                 "-autoconnect", "1",
                 "-jtagconf", "-1,-1",
                 "-CommanderScript", "${workspaceFolder}/tools/jlink/download.jlink"
@@ -26,7 +26,7 @@
             "args": [
                 "-device", "${config:mcu.device}",
                 "-if", "SWD",
-                "-speed", "10000",
+                "-speed", "20000",
                 "-autoconnect", "1",
                 "-CommanderScript", "${workspaceFolder}/tools/jlink/download.jlink"
             ],
@@ -40,7 +40,7 @@
             "args": [
                 "-device", "${config:mcu.device}",
                 "-if", "JTAG",
-                "-speed", "10000",
+                "-speed", "20000",
                 "-autoconnect", "1",
                 "-jtagconf", "-1,-1",
                 "-CommanderScript", "${workspaceFolder}/tools/jlink/reset.jlink"
@@ -55,7 +55,7 @@
             "args": [
                 "-device", "${config:mcu.device}",
                 "-if", "SWD",
-                "-speed", "10000",
+                "-speed", "20000",
                 "-autoconnect", "1",
                 "-CommanderScript", "${workspaceFolder}/tools/jlink/reset.jlink"
             ],
@@ -69,7 +69,7 @@
             "args": [
                 "-device", "${config:mcu.device}",
                 "-if", "JTAG",
-                "-speed", "10000",
+                "-speed", "20000",
                 "-autoconnect", "1",
                 "-jtagconf", "-1,-1",
                 "-CommanderScript", "${workspaceFolder}/tools/jlink/erase.jlink"
@@ -84,7 +84,7 @@
             "args": [
                 "-device", "${config:mcu.device}",
                 "-if", "SWD",
-                "-speed", "10000",
+                "-speed", "20000",
                 "-autoconnect", "1",
                 "-CommanderScript", "${workspaceFolder}/tools/jlink/erase.jlink"
             ],

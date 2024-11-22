@@ -50,8 +50,10 @@ set(HC32_LL_SOURCES
 #----------------------------------------
 set(HARDWARE_SOURCES
     hardware/can/drvCan.cpp
+    hardware/led/drvLed.cpp
     hardware/motor/drvMotor.cpp
     hardware/uart/drvUart.cpp
+    hardware/systemInit.cpp
 )
 
 # 3. 合并所有源文件
@@ -81,8 +83,10 @@ set(HC32_LL_INCLUDE_DIRS
 # 5.3 驱动层头文件路径
 set(HARDWARE_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/hardware/can
+    ${CMAKE_CURRENT_SOURCE_DIR}/hardware/led
     ${CMAKE_CURRENT_SOURCE_DIR}/hardware/motor
     ${CMAKE_CURRENT_SOURCE_DIR}/hardware/uart
+    ${CMAKE_CURRENT_SOURCE_DIR}/hardware
 )
 
 # 6. 添加所有包含路径

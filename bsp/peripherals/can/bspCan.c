@@ -105,6 +105,8 @@ static void CAN_IrqCallback(void)
     /* CAN发送完成中断 */
     if (CAN_GetStatus(CAN_UNIT, CAN_FLAG_PTB_TX) == SET) {
         CAN_ClearStatus(CAN_UNIT, CAN_FLAG_PTB_TX);
+        // 获取CAN发送任务句柄
+        TaskHandle_t canTxTaskHandle = CANTask_GetCANTxTaskHandle();
         vTaskNotifyGiveFromISR(canTxTaskHandle, &xHigherPriorityTaskWoken);
         if (xHigherPriorityTaskWoken == pdTRUE) {
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
@@ -115,6 +117,8 @@ static void CAN_IrqCallback(void)
     /* CAN接收中断 */
     if (CAN_GetStatus(CAN_UNIT, CAN_FLAG_RX) == SET) {
         CAN_ClearStatus(CAN_UNIT, CAN_FLAG_RX);
+        // 获取CAN接收任务句柄
+        TaskHandle_t canRxTaskHandle = CANTask_GetCANRxTaskHandle();
         vTaskNotifyGiveFromISR(canRxTaskHandle, &xHigherPriorityTaskWoken);
         if (xHigherPriorityTaskWoken == pdTRUE) {
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);

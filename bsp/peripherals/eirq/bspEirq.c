@@ -16,10 +16,11 @@ static void entranceSensorIrqCallback(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     BaseType_t xResult;
+    EventGroupHandle_t motorEventGroupHandle = Motor_GetEventGroupHandle();
 
-    if (SET == EXTINT_GetExtIntStatus(EXTINT_CH06)) {
+    if (SET == EXTINT_GetExtIntStatus(EntranceSensorExtInt)) {
         // 使用枚举类型设置事件位
-        xResult = xEventGroupSetBitsFromISR(motorControlEventGroupHandle,
+        xResult = xEventGroupSetBitsFromISR(motorEventGroupHandle,
                                             (EventBits_t)(EVENT_DOOR_ENTRY_SENSOR),
                                             &xHigherPriorityTaskWoken);
 
@@ -27,7 +28,7 @@ static void entranceSensorIrqCallback(void)
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
         }
 
-        EXTINT_ClearExtIntStatus(EXTINT_CH07);
+        EXTINT_ClearExtIntStatus(EntranceSensorExtInt);
     }
 }
 
@@ -39,9 +40,10 @@ static void exitSensorIrqCallback(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     BaseType_t xResult;
+    EventGroupHandle_t motorEventGroupHandle = Motor_GetEventGroupHandle();
 
-    if (SET == EXTINT_GetExtIntStatus(EXTINT_CH04)) {
-        xResult = xEventGroupSetBitsFromISR(motorControlEventGroupHandle,
+    if (SET == EXTINT_GetExtIntStatus(ExitSensorExtInt)) {
+        xResult = xEventGroupSetBitsFromISR(motorEventGroupHandle,
                                             (EventBits_t)(EVENT_DOOR_EXIT_SENSOR),
                                             &xHigherPriorityTaskWoken);
 
@@ -49,51 +51,53 @@ static void exitSensorIrqCallback(void)
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
         }
 
-        EXTINT_ClearExtIntStatus(EXTINT_CH08);
+        EXTINT_ClearExtIntStatus(ExitSensorExtInt);
     }
 }
 
 /**
- * @brief 身高感应中断回调函数
- * @details 当身高感应触发中断时,设置事件组标志位
+ * @brief 进门电机开启到位中断回调函数
+ * @details 当进门电机开启到位时,设置事件组标志位
  */
-static void heightSensorIrqCallback(void)
+static void entranceMotorOpenToPositionIrqCallback(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     BaseType_t xResult;
+    EventGroupHandle_t motorEventGroupHandle = Motor_GetEventGroupHandle();
 
-    if (SET == EXTINT_GetExtIntStatus(EXTINT_CH05)) {
-        xResult = xEventGroupSetBitsFromISR(motorControlEventGroupHandle,
-                                            (EventBits_t)(EVENT_HEIGHT_SENSOR),
+    if (SET == EXTINT_GetExtIntStatus(EntranceMotorOpenToPositionExtInt)) {
+        xResult = xEventGroupSetBitsFromISR(motorEventGroupHandle,
+                                            (EventBits_t)(EVENT_ENTRY_MOTOR_OPEN_TO_POSITION),
                                             &xHigherPriorityTaskWoken);
 
         if (xResult != pdFAIL) {
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
         }
 
-        EXTINT_ClearExtIntStatus(EXTINT_CH05);
+        EXTINT_ClearExtIntStatus(EntranceMotorOpenToPositionExtInt);
     }
 }
 
 /**
- * @brief 占位感应中断回调函数
- * @details 当占位感应触发中断时,设置事件组标志位
+ * @brief 进门电机关闭到位中断回调函数
+ * @details 当进门电机关闭到位时,设置事件组标志位
  */
-static void occupancySensorIrqCallback(void)
+static void entranceMotorCloseToPositionIrqCallback(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     BaseType_t xResult;
+    EventGroupHandle_t motorEventGroupHandle = Motor_GetEventGroupHandle();
 
-    if (SET == EXTINT_GetExtIntStatus(EXTINT_CH03)) {
-        xResult = xEventGroupSetBitsFromISR(motorControlEventGroupHandle,
-                                            (EventBits_t)(EVENT_OCCUPANCY_SENSOR),
+    if (SET == EXTINT_GetExtIntStatus(EntranceMotorCloseToPositionExtInt)) {
+        xResult = xEventGroupSetBitsFromISR(motorEventGroupHandle,
+                                            (EventBits_t)(EVENT_ENTRY_MOTOR_CLOSE_TO_POSITION),
                                             &xHigherPriorityTaskWoken);
 
         if (xResult != pdFAIL) {
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
         }
 
-        EXTINT_ClearExtIntStatus(EXTINT_CH03);
+        EXTINT_ClearExtIntStatus(EntranceMotorCloseToPositionExtInt);
     }
 }
 
@@ -111,17 +115,20 @@ void initBspEirq(void)
     (void)GPIO_StructInit(&stcGpioInit);
     stcGpioInit.u16ExtInt = PIN_EXTINT_ON;
     (void)GPIO_Init(EntranceSensorPort, EntranceSensorPin, &stcGpioInit);
-    (void)GPIO_Init(HeightSensorPort, HeightSensorPin, &stcGpioInit);
     (void)GPIO_Init(ExitSensorPort, ExitSensorPin, &stcGpioInit);
-    (void)GPIO_Init(OccupancySensorPort, OccupancySensorPin, &stcGpioInit);
+    (void)GPIO_Init(EntranceMotorOpenToPositionPort, EntranceMotorOpenToPositionPin, &stcGpioInit);
+    (void)GPIO_Init(EntranceMotorCloseToPositionPort, EntranceMotorCloseToPositionPin,
+                    &stcGpioInit);
 
     /* ExtInt 外部中断初始化 */
     (void)EXTINT_StructInit(&stcExtIntInit);
-    stcExtIntInit.u32Edge = EXTINT_TRIG_BOTH; // 这里很重要，因为要通过高低电平判断状态
+    stcExtIntInit.u32Edge = EXTINT_TRIG_BOTH;
+    stcExtIntInit.u32Filter = EXTINT_FILTER_ON;      // 开启硬件滤波
+    stcExtIntInit.u32FilterClock = EXTINT_FCLK_DIV8; // 设置滤波时钟分频
     (void)EXTINT_Init(EntranceSensorExtInt, &stcExtIntInit);
-    (void)EXTINT_Init(HeightSensorExtInt, &stcExtIntInit);
     (void)EXTINT_Init(ExitSensorExtInt, &stcExtIntInit);
-    (void)EXTINT_Init(OccupancySensorExtInt, &stcExtIntInit);
+    (void)EXTINT_Init(EntranceMotorOpenToPositionExtInt, &stcExtIntInit);
+    (void)EXTINT_Init(EntranceMotorCloseToPositionExtInt, &stcExtIntInit);
 
     /* 进门感应 中断注册 */
     stcIrqSignConfig.enIntSrc = EntranceSensorIntSrc;
@@ -137,17 +144,17 @@ void initBspEirq(void)
     (void)INTC_IrqSignIn(&stcIrqSignConfig);
     installInterruptHandler(&stcIrqSignConfig, DDL_IRQ_PRIO_DEFAULT);
 
-    /* 身高感应 中断注册 */
-    stcIrqSignConfig.enIntSrc = HeightSensorIntSrc;
-    stcIrqSignConfig.enIRQn = HeightSensorIRQn;
-    stcIrqSignConfig.pfnCallback = &heightSensorIrqCallback;
+    /* 进门电机开启到位 中断注册 */
+    stcIrqSignConfig.enIntSrc = EntranceMotorOpenToPositionIntSrc;
+    stcIrqSignConfig.enIRQn = EntranceMotorOpenToPositionIRQn;
+    stcIrqSignConfig.pfnCallback = &entranceMotorOpenToPositionIrqCallback;
     (void)INTC_IrqSignIn(&stcIrqSignConfig);
     installInterruptHandler(&stcIrqSignConfig, DDL_IRQ_PRIO_DEFAULT);
 
-    /* 占位感应 中断注册 */
-    stcIrqSignConfig.enIntSrc = OccupancySensorIntSrc;
-    stcIrqSignConfig.enIRQn = OccupancySensorIRQn;
-    stcIrqSignConfig.pfnCallback = &occupancySensorIrqCallback;
+    /* 进门电机关闭到位 中断注册 */
+    stcIrqSignConfig.enIntSrc = EntranceMotorCloseToPositionIntSrc;
+    stcIrqSignConfig.enIRQn = EntranceMotorCloseToPositionIRQn;
+    stcIrqSignConfig.pfnCallback = &entranceMotorCloseToPositionIrqCallback;
     (void)INTC_IrqSignIn(&stcIrqSignConfig);
     installInterruptHandler(&stcIrqSignConfig, DDL_IRQ_PRIO_DEFAULT);
 }

@@ -19,6 +19,6 @@ void initBspGpio(void)
     (void)GPIO_StructInit(&stcGpioInit);
     stcGpioInit.u16PinState = PIN_STAT_SET;
     stcGpioInit.u16PinDir = PIN_DIR_OUT;
-    stcGpioInit.u16PinDrv = PIN_MID_DRV;
+    stcGpioInit.u16PinDrv = PIN_HIGH_DRV;
     (void)GPIO_Init(ExitMotorControlPort, ExitMotorControlPin, &stcGpioInit);
 }

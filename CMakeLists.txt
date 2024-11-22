@@ -45,6 +45,7 @@ add_subdirectory(hal)
 add_subdirectory(libraries)
 add_subdirectory(middlewares)
 add_subdirectory(source)
+add_subdirectory(application)
 
 # 8. 后期构建命令
 #----------------------------------------

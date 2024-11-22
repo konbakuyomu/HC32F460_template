@@ -21,6 +21,7 @@ static void USART4_RxTimeout_IrqCallback(void)
     if (u16DataToSend <= HOST_BUFFER_LENGTH) {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         BaseType_t xResult;
+        TaskHandle_t uartRxTaskHandle = UartTask_GetUartRxTaskHandle();
 
         // 注意：确保 u16DataToSend 的值不会超过任务通知的最大值
         xResult = xTaskNotifyFromISR(uartRxTaskHandle, u16DataToSend, eSetValueWithOverwrite,
@@ -43,7 +44,7 @@ static void USART4_RX_DMA_TC_IrqCallback(void)
     // 使用任务通知并发送数据
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     BaseType_t xResult;
-
+    TaskHandle_t uartRxTaskHandle = UartTask_GetUartRxTaskHandle();
     // 注意：确保 u16DataToSend 的值不会超过任务通知的最大值
     xResult = xTaskNotifyFromISR(uartRxTaskHandle, HOST_BUFFER_LENGTH, eSetValueWithOverwrite,
                                  &xHigherPriorityTaskWoken);
@@ -82,7 +83,7 @@ static void USART4_TX_DMA_TC_IrqCallback(void)
 static void USART4_TxComplete_IrqCallback(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
+    TaskHandle_t uartTxTaskHandle = UartTask_GetUartTxTaskHandle();
     /* 关闭串口发送功能和发送完成中断 */
     USART_FuncCmd(USART4_UNIT, (USART_TX | USART_INT_TX_CPLT),
                   DISABLE);                                // 关闭串口发送功能和发送完成中断

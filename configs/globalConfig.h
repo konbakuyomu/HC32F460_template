@@ -1,5 +1,5 @@
 /**
- * @file GlobalConfig.h
+ * @file globalConfig.h
  * @brief 全局变量和头文件包含的中转总集
  * @author konbakuyomu
  * @version 1.0
@@ -58,24 +58,24 @@ extern "C" {
 #include "printfUart.h"
 
 /* 宏定义 */
-#define SYSTEM_PCLK1_FREQUENCY_HZ (100000000U) // 系统 PCLK1 时钟频率:100 MHz
-#define MOTOR_DIRECTION_FORWARD   (0)          // 正转
-#define MOTOR_DIRECTION_REVERSE   (1)          // 反转
-#define HOST_BUFFER_LENGTH        (50U)        // 数组长度
-#define USART4_CONFIG             (0)          // USART4配置
-#define EVENT_DOOR_ENTRY_SENSOR   (1 << 0)     // 进门感应事件
-#define EVENT_DOOR_EXIT_SENSOR    (1 << 1)     // 出门感应事件
-#define EVENT_HEIGHT_SENSOR       (1 << 2)     // 身高感应事件
-#define EVENT_OCCUPANCY_SENSOR    (1 << 3)     // 占位感应事件
-#define EVENT_ENTRY_MOTOR_ON      (1 << 4)     // 进门电机开启
-#define EVENT_ENTRY_MOTOR_OFF     (1 << 5)     // 进门电机关闭
-#define EVENT_EXIT_MOTOR_ON       (1 << 6)     // 出门电机开启
-#define EVENT_EXIT_MOTOR_OFF      (1 << 7)     // 出门电机关闭
-#define EVENT_ALARM_LED_ON        (1 << 8)     // 报警指示灯开启
-#define EVENT_ALARM_LED_OFF       (1 << 9)     // 报警指示灯关闭
-#define EVENT_FAULT_LED_ON        (1 << 10)    // 故障指示灯开启
-#define EVENT_FAULT_LED_OFF       (1 << 11)    // 故障指示灯关闭
-#define EVENT_EMERGENCY_STOP      (1 << 12)    // 紧急停止事件
+#define SYSTEM_PCLK1_FREQUENCY_HZ           (100000000U) // 系统 PCLK1 时钟频率:100 MHz
+#define MOTOR_DIRECTION_FORWARD             (0)          // 正转
+#define MOTOR_DIRECTION_REVERSE             (1)          // 反转
+#define HOST_BUFFER_LENGTH                  (50U)        // 数组长度
+#define USART4_CONFIG                       (0)          // USART4配置
+#define EVENT_DOOR_ENTRY_SENSOR             (1 << 0)     // 进门感应事件
+#define EVENT_DOOR_EXIT_SENSOR              (1 << 1)     // 出门感应事件
+#define EVENT_ENTRY_MOTOR_OPEN_TO_POSITION  (1 << 2)     // 进门电机开到位
+#define EVENT_ENTRY_MOTOR_CLOSE_TO_POSITION (1 << 3)     // 进门电机关到位
+#define EVENT_ENTRY_MOTOR_ON                (1 << 4)     // 进门电机开启
+#define EVENT_ENTRY_MOTOR_OFF               (1 << 5)     // 进门电机关闭
+#define EVENT_EXIT_MOTOR_ON                 (1 << 6)     // 出门电机开启
+#define EVENT_EXIT_MOTOR_OFF                (1 << 7)     // 出门电机关闭
+#define EVENT_ALARM_LED_ON                  (1 << 8)     // 报警指示灯开启
+#define EVENT_ALARM_LED_OFF                 (1 << 9)     // 报警指示灯关闭
+#define EVENT_FAULT_LED_ON                  (1 << 10)    // 故障指示灯开启
+#define EVENT_FAULT_LED_OFF                 (1 << 11)    // 故障指示灯关闭
+#define EVENT_EMERGENCY_STOP                (1 << 12)    // 紧急停止事件
 
 /* 联合体 ------------------------------------------------------------------*/
 
@@ -106,22 +106,10 @@ typedef struct {
 } stc_uart_tx_frame_t;
 
 /* 全局变量 ----------------------------------------------------------------*/
-extern TaskHandle_t appTaskCreateHandle;
-extern TaskHandle_t ledTaskHandle;
-extern TaskHandle_t motorTaskHandle;
-extern TaskHandle_t uartTxTaskHandle;
-extern TaskHandle_t uartRxTaskHandle;
-extern TaskHandle_t canTxTaskHandle;
-extern TaskHandle_t canRxTaskHandle;
-extern QueueHandle_t uartTxQueueHandle;
-extern QueueHandle_t canTxQueueHandle;
-extern EventGroupHandle_t motorControlEventGroupHandle;
-extern TimerHandle_t MotorTimeoutTimer;
-extern TimerHandle_t PersonStandingStatusTimer;
 extern uint8_t hostReceiveBuffer[HOST_BUFFER_LENGTH];
-extern bool isPersonStanding;
-/* 函数 -------------------------------------------------------------------*/
+extern uint8_t hostSendBuffer[HOST_BUFFER_LENGTH];
 
+/* 函数 -------------------------------------------------------------------*/
 void installInterruptHandler(const stc_irq_signin_config_t *pstcConfig, uint32_t u32Priority);
 uint8_t *createDynamicBuffer(uint8_t **buffer, size_t size);
 
@@ -138,12 +126,19 @@ uint8_t *createDynamicBuffer(uint8_t **buffer, size_t size);
 /* drv 头文件 */
 #include "drvCan.hpp"
 #include "drvHal.hpp"
+#include "drvLed.hpp"
 #include "drvMotor.hpp"
 #include "drvUart.hpp"
 #include "keyValueMap.hpp"
+#include "systemInit.hpp"
 
 /* app 头文件 */
-#include "taskManage.hpp"
+#include "baseTask.hpp"
+#include "canTask.hpp"
+#include "ledTask.hpp"
+#include "motorTask.hpp"
+#include "uartTask.hpp"
+#include "taskFactory.hpp"
 
 /* 硬件抽象层 头文件 */
 #include "hal.hpp"

@@ -69,7 +69,7 @@ extern "C" {
 /* UART4 配置 */
 #define USART4_UNIT         (CM_USART4)
 #define USART4_FCG_ENABLE() (FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_USART4, ENABLE))
-#define USART4_BAUDRATE     (115200UL)
+#define USART4_BAUDRATE     (9600UL)
 
 /* 函数声明 ------------------------------------------------------------------*/
 void USART4_Init();

@@ -13,43 +13,88 @@ namespace DRV
 std::unique_ptr<UARTDriver> UARTDriver::m_usart = nullptr;
 
 /**
- * @brief 获取USART实例
- * @return USART* 指向USART实例的指针
+ * @brief 构造函数
  */
-UARTDriver *UARTDriver::getInstance()
+UARTDriver::UARTDriver() { createTxQueue(); }
+
+/**
+ * @brief 析构函数
+ */
+UARTDriver::~UARTDriver()
 {
-    if (!m_usart) {
-        m_usart = std::make_unique<UARTDriver>();
+    if (m_uartTxQueue != nullptr) {
+        vQueueDelete(m_uartTxQueue);
+        m_uartTxQueue = nullptr;
     }
-    return m_usart.get();
+}
+
+/**
+ * @brief 创建发送队列
+ */
+void UARTDriver::createTxQueue()
+{
+    if (m_uartTxQueue == nullptr) {
+        m_uartTxQueue = xQueueCreate(10, sizeof(stc_uart_tx_frame_t));
+        if (m_uartTxQueue == nullptr) {
+            // 处理队列创建失败
+            DDL_Printf("Failed to create UART TX queue\n");
+        }
+    }
+}
+
+/**
+ * @brief 发送数据到队列
+ * @param data 数据
+ * @param length 数据长度
+ * @return 是否发送成功
+ */
+bool UARTDriver::sendToQueue(const uint8_t *data, size_t length)
+{
+    if (m_uartTxQueue == nullptr || data == nullptr || length == 0) {
+        return false;
+    }
+
+    stc_uart_tx_frame_t txFrame;
+    txFrame.data = const_cast<uint8_t *>(data); // 注意：确保数据在发送完成前保持有效
+    txFrame.length = length;
+
+    BaseType_t result = xQueueSend(m_uartTxQueue, &txFrame, portMAX_DELAY);
+    return (result == pdPASS);
 }
 
 /**
  * @brief 发送人员站立状态
  */
-void UARTDriver::sendPersonStandingStatus(TimerHandle_t xTimer)
+void UARTDriver::sendPersonStandingStatus(en_pin_state_t pin_state)
 {
-    std::array<uint8_t, 11> dataArray = {0};
-    dataArray[0] = 0xDD;
-    dataArray[1] = 0xDD;
-    dataArray[2] = 0x00;
-    dataArray[3] = 0x0B;
-    dataArray[4] = 0x00;
-    dataArray[5] = static_cast<uint8_t>(Command::ReportRealTimeData);
-    dataArray[6] = isPersonStanding ? 0x01 : 0x00;
+    // 清空发送缓冲区
+    std::fill(hostSendBuffer, hostSendBuffer + HOST_BUFFER_LENGTH, 0);
+
+    // 填充发送缓冲区
+    hostSendBuffer[0] = 0xDD;
+    hostSendBuffer[1] = 0xDD;
+    hostSendBuffer[2] = 0x0B;
+    hostSendBuffer[3] = 0x00;
+    hostSendBuffer[4] = 0x00;
+    hostSendBuffer[5] = static_cast<uint8_t>(Command::ReportRealTimeData);
+    hostSendBuffer[6] = pin_state ? 0x00 : 0x01;
 
     // CRC校验
-    unsigned short crc = calculateChecksum(dataArray.data(), dataArray.size() - 4);
-    dataArray[7] = crc & 0xFF;
-    dataArray[8] = (crc >> 8) & 0xFF;
-    dataArray[9] = 0xFF;
-    dataArray[10] = 0xFF;
+    unsigned short crc = calculateChecksum(hostSendBuffer, 7);
+    hostSendBuffer[7] = crc & 0xFF;
+    hostSendBuffer[8] = (crc >> 8) & 0xFF;
+    hostSendBuffer[9] = 0xFF;
+    hostSendBuffer[10] = 0xFF;
 
     // 发送队列
     stc_uart_tx_frame_t stcTx;
-    stcTx.data = dataArray.data();
-    stcTx.length = dataArray.size();
-    xQueueSend(uartTxQueueHandle, &stcTx, portMAX_DELAY);
+    stcTx.data = hostSendBuffer;
+    stcTx.length = 11;
+
+    // 使用成员队列发送
+    if (getInstance()->m_uartTxQueue != nullptr) {
+        xQueueSend(getInstance()->m_uartTxQueue, &stcTx, portMAX_DELAY);
+    }
 }
 
 /**
@@ -157,8 +202,10 @@ void UARTDriver::registerReceiveCallback(uint8_t command, std::function<void(uin
  */
 void UARTDriver::handleEntranceBarrier(uint8_t data)
 {
-    data == 0x01 ? xEventGroupSetBits(motorControlEventGroupHandle, EVENT_ENTRY_MOTOR_ON)
-                 : xEventGroupSetBits(motorControlEventGroupHandle, EVENT_ENTRY_MOTOR_OFF);
+    auto motorController = DRV::MotorController::getInstance();
+    EventGroupHandle_t motorEventGroupHandle = motorController->getEventGroupHandle();
+    data == 0x01 ? xEventGroupSetBits(motorEventGroupHandle, EVENT_ENTRY_MOTOR_ON)
+                 : xEventGroupSetBits(motorEventGroupHandle, EVENT_ENTRY_MOTOR_OFF);
 }
 
 /**
@@ -167,8 +214,10 @@ void UARTDriver::handleEntranceBarrier(uint8_t data)
  */
 void UARTDriver::handleExitGate(uint8_t data)
 {
-    data == 0x01 ? xEventGroupSetBits(motorControlEventGroupHandle, EVENT_EXIT_MOTOR_ON)
-                 : xEventGroupSetBits(motorControlEventGroupHandle, EVENT_EXIT_MOTOR_OFF);
+    auto motorController = DRV::MotorController::getInstance();
+    EventGroupHandle_t motorEventGroupHandle = motorController->getEventGroupHandle();
+    data == 0x01 ? xEventGroupSetBits(motorEventGroupHandle, EVENT_EXIT_MOTOR_ON)
+                 : xEventGroupSetBits(motorEventGroupHandle, EVENT_EXIT_MOTOR_OFF);
 }
 
 /**
@@ -177,8 +226,10 @@ void UARTDriver::handleExitGate(uint8_t data)
  */
 void UARTDriver::handleAlarmLight(uint8_t data)
 {
-    data == 0x01 ? xEventGroupSetBits(motorControlEventGroupHandle, EVENT_ALARM_LED_ON)
-                 : xEventGroupSetBits(motorControlEventGroupHandle, EVENT_ALARM_LED_OFF);
+    auto motorController = DRV::MotorController::getInstance();
+    EventGroupHandle_t motorEventGroupHandle = motorController->getEventGroupHandle();
+    data == 0x01 ? xEventGroupSetBits(motorEventGroupHandle, EVENT_ALARM_LED_ON)
+                 : xEventGroupSetBits(motorEventGroupHandle, EVENT_ALARM_LED_OFF);
 }
 
 /**
@@ -187,8 +238,10 @@ void UARTDriver::handleAlarmLight(uint8_t data)
  */
 void UARTDriver::handleFaultLight(uint8_t data)
 {
-    data == 0x01 ? xEventGroupSetBits(motorControlEventGroupHandle, EVENT_FAULT_LED_ON)
-                 : xEventGroupSetBits(motorControlEventGroupHandle, EVENT_FAULT_LED_OFF);
+    auto motorController = DRV::MotorController::getInstance();
+    EventGroupHandle_t motorEventGroupHandle = motorController->getEventGroupHandle();
+    data == 0x01 ? xEventGroupSetBits(motorEventGroupHandle, EVENT_FAULT_LED_ON)
+                 : xEventGroupSetBits(motorEventGroupHandle, EVENT_FAULT_LED_OFF);
 }
 
 } // namespace DRV

@@ -13,35 +13,40 @@ namespace DRV
 std::unique_ptr<CANDriver> CANDriver::mInstance = nullptr;
 
 /**
- * @brief 获取CANDriver实例（单例模式实现）
- * @return CANDriver实例指针
+ * @brief 构造函数
  */
-CANDriver *CANDriver::getInstance()
+CANDriver::CANDriver()
 {
-    if (!mInstance) {
-        mInstance = std::make_unique<CANDriver>();
+    initReceiveBuffer();
+    createTxQueue();
+}
+
+/**
+ * @brief 创建发送队列
+ */
+void CANDriver::createTxQueue()
+{
+    if (m_canTxQueue == nullptr) {
+        m_canTxQueue = xQueueCreate(10, sizeof(stc_can_tx_frame_t));
+        if (m_canTxQueue == nullptr) {
+            // 处理队列创建失败
+            DDL_Printf("Failed to create CAN TX queue\n");
+        }
     }
-    return mInstance.get();
 }
 
 /**
- * @brief 注册CAN消息处理函数
+ * @brief 发送数据到队列
+ * @param data 数据
+ * @param length 数据长度
+ * @return 是否发送成功
  */
-void CANDriver::initCANHandlers()
+bool CANDriver::sendToQueue(const void *value)
 {
-    registerReceiveCallback(static_cast<uint32_t>(CANID::TEST1),
-                            [this](const stc_can_rx_frame_t &frame) { handleTest1(frame); });
+    if (m_canTxQueue == nullptr || value == nullptr) {
+        return false;
+    }
 
-    registerReceiveCallback(static_cast<uint32_t>(CANID::TEST2),
-                            [this](const stc_can_rx_frame_t &frame) { handleTest2(frame); });
-}
-
-/**
- * @brief 发送CAN数据
- * @param value 指向要发送的数据
- */
-void CANDriver::sendData(const void *value)
-{
     stc_can_tx_frame_t stcTx;
     uint32_t u32ExtendedID = 0xDD01;
 
@@ -54,7 +59,31 @@ void CANDriver::sendData(const void *value)
     stcTx.DLC = CAN_DLC8;
 
     // 将发送帧加入到发送队列
-    xQueueSend(canTxQueueHandle, &stcTx, portMAX_DELAY);
+    BaseType_t result = xQueueSend(m_canTxQueue, &stcTx, portMAX_DELAY);
+    return (result == pdPASS);
+}
+
+/**
+ * @brief 析构函数
+ */
+CANDriver::~CANDriver()
+{
+    if (m_canTxQueue != nullptr) {
+        vQueueDelete(m_canTxQueue);
+        m_canTxQueue = nullptr;
+    }
+}
+
+/**
+ * @brief 注册CAN消息处理函数
+ */
+void CANDriver::initCANHandlers()
+{
+    registerReceiveCallback(static_cast<uint32_t>(CANID::TEST1),
+                            [this](const stc_can_rx_frame_t &frame) { handleTest1(frame); });
+
+    registerReceiveCallback(static_cast<uint32_t>(CANID::TEST2),
+                            [this](const stc_can_rx_frame_t &frame) { handleTest2(frame); });
 }
 
 /**
@@ -135,17 +164,11 @@ void CANDriver::registerReceiveCallback(uint32_t canId,
  * @brief 处理TEST1消息
  * @param frame 接收到的CAN帧
  */
-void CANDriver::handleTest1(const stc_can_rx_frame_t &frame)
-{
-    HAL::turnOnLed("blue");
-}
+void CANDriver::handleTest1(const stc_can_rx_frame_t &frame) { HAL::turnOnLed("blue"); }
 
 /**
  * @brief 处理TEST2消息
  * @param frame 接收到的CAN帧
  */
-void CANDriver::handleTest2(const stc_can_rx_frame_t &frame)
-{
-    HAL::turnOnLed("green");
-}
+void CANDriver::handleTest2(const stc_can_rx_frame_t &frame) { HAL::turnOnLed("green"); }
 } // namespace DRV

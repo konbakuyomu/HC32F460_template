@@ -103,7 +103,7 @@ void DRV_HAL::initCanImpl() { initBspCanImpl(); }
  * @brief CAN发送
  * @param value 发送数据
  */
-void DRV_HAL::sendCanImpl(void *value) { DRV::CANDriver::getInstance()->sendData(value); }
+void DRV_HAL::sendCanImpl(void *value) { DRV::CANDriver::getInstance()->sendToQueue(value); }
 
 /**
  * @brief UART初始化

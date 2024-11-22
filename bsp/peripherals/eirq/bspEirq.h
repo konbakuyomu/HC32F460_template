@@ -16,11 +16,11 @@ extern "C" {
 /* 宏定义 --------------------------------------------------------------------*/
 
 // 入口感应
-#define EntranceSensorExtInt (EXTINT_CH06)
+#define EntranceSensorExtInt (EXTINT_CH05)
 #define EntranceSensorIRQn   (INT032_IRQn)
-#define EntranceSensorIntSrc (INT_SRC_PORT_EIRQ6)
+#define EntranceSensorIntSrc (INT_SRC_PORT_EIRQ5)
 #define EntranceSensorPort   (GPIO_PORT_D)
-#define EntranceSensorPin    (GPIO_PIN_06)
+#define EntranceSensorPin    (GPIO_PIN_05)
 
 // 出口感应
 #define ExitSensorExtInt (EXTINT_CH04)
@@ -29,19 +29,19 @@ extern "C" {
 #define ExitSensorPort   (GPIO_PORT_D)
 #define ExitSensorPin    (GPIO_PIN_04)
 
-// 身高感应
-#define HeightSensorExtInt (EXTINT_CH05)
-#define HeightSensorIRQn   (INT033_IRQn)
-#define HeightSensorIntSrc (INT_SRC_PORT_EIRQ5)
-#define HeightSensorPort   (GPIO_PORT_D)
-#define HeightSensorPin    (GPIO_PIN_05)
+// 进门电机开启到位
+#define EntranceMotorOpenToPositionExtInt (EXTINT_CH02)
+#define EntranceMotorOpenToPositionIRQn   (INT033_IRQn)
+#define EntranceMotorOpenToPositionIntSrc (INT_SRC_PORT_EIRQ2)
+#define EntranceMotorOpenToPositionPort   (GPIO_PORT_D)
+#define EntranceMotorOpenToPositionPin    (GPIO_PIN_02)
 
-// 占位感应
-#define OccupancySensorExtInt (EXTINT_CH03)
-#define OccupancySensorIRQn   (INT035_IRQn)
-#define OccupancySensorIntSrc (INT_SRC_PORT_EIRQ3)
-#define OccupancySensorPort   (GPIO_PORT_D)
-#define OccupancySensorPin    (GPIO_PIN_03)
+// 进门电机关闭到位
+#define EntranceMotorCloseToPositionExtInt (EXTINT_CH01)
+#define EntranceMotorCloseToPositionIRQn   (INT035_IRQn)
+#define EntranceMotorCloseToPositionIntSrc (INT_SRC_PORT_EIRQ1)
+#define EntranceMotorCloseToPositionPort   (GPIO_PORT_D)
+#define EntranceMotorCloseToPositionPin    (GPIO_PIN_01)
 
 /* 函数声明 ------------------------------------------------------------------*/
 void initBspEirq(void);

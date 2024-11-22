@@ -42,19 +42,14 @@ int main(void)
     LL_PERIPH_WE(LL_PERIPH_ALL);
     /* 系统初始化 */
     hc32f460SystemInit();
-    /* 定义一个创建信息返回值，默认为pdPASS */
-    BaseType_t xReturn = pdPASS;
 
     /* 创建任务创建任务 */
-    xReturn =
-        xTaskCreate((TaskFunction_t)TaskCreator::AppTaskCreate, (const char *)"AppTaskCreate", (uint16_t)256,
-                    (void *)NULL, (UBaseType_t)3, (TaskHandle_t *)&appTaskCreateHandle);
+    auto systemInitTask = SystemInitializer::getInstance();
+    systemInitTask->createSystemInitTask();
 
     /* 启动任务调度 */
-    if (pdPASS == xReturn) {
-        vTaskStartScheduler();
-    } else
-        return -1;
+    vTaskStartScheduler();
+
     /* 正常不会执行到这里 */
     for (;;) {
     }

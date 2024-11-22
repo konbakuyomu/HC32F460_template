@@ -2,11 +2,4 @@
 #----------------------------------------
 target_sources(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/task/taskManage.cpp
-)
-
-# 2. 添加头文件目录
-#----------------------------------------
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/task
 )
